@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    container_name: resq
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+  
+  db:
+    image: postgres:16-alpine
+    container_name: resq-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: resq
+      POSTGRES_USER: resq
+      POSTGRES_PASSWORD: yourpassword
+    volumes:
+      - resq-db-data:/var/lib/postgresql/data
+
+volumes:
+  resq-db-data:
