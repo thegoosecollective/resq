@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ResidentStatus {
+  evacuated
+  assistance
+  emergency
+}
+
+enum ResponderStatus {
+  in_progress
+  evacuated
+    deceased
+}
+
+model Building {
+  id           Int      @id @default(autoincrement())
+  name         String
+  accessCode   String   @unique
+  totalFloors  Int
+  units        Unit[]
+  createdAt    DateTime @default(now())
+}
+
+model Unit {
+  id                     Int      @id @default(autoincrement())
+  buildingId             Int
+  building               Building @relation(fields: [buildingId], references: [id])
+  floor                  Int
+  unitNumber             String
+  emergencyContactEmail  String?
+  report                 Report?
+  createdAt              DateTime @default(now())
+
+  @@unique([buildingId, floor, unitNumber])
+}
+
+model Report {
+  id               Int              @id @default(autoincrement())
+  unitId           Int              @unique
+  unit             Unit             @relation(fields: [unitId], references: [id])
+  residentStatus   ResidentStatus
+  responderStatus  ResponderStatus?
+  resourceRequests String[]
+  notes            String?
+  ipAddress        String?
+  submittedAt      DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
