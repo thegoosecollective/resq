@@ -1,0 +1,7 @@
+POSTGRES_DB=resq
+POSTGRES_USER=resq_user
+POSTGRES_PASSWORD=your_password_here
+DATABASE_URL="postgresql://resq_user:your_password_here@db:5432/resq"
+FIRST_RESPONDER_CODE=your_access_code
+RESEND_API_KEY=your_api_key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
