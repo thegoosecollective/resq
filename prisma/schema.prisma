@@ -15,7 +15,7 @@ enum ResidentStatus {
 enum ResponderStatus {
   in_progress
   evacuated
-    deceased
+  deceased
 }
 
 model Building {
