@@ -23,6 +23,7 @@ model Building {
   name         String
   accessCode   String   @unique
   totalFloors  Int
+  address      String   @unique
   units        Unit[]
   createdAt    DateTime @default(now())
 }
