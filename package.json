@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "migrate": "dotenv -e .env.local -- npx prisma migrate dev",
+    "migrate:reset": "dotenv -e .env.local -- npx prisma migrate reset --force",
     "studio": "dotenv -e .env.local -- npx prisma studio",
-    "generate": "npx prisma generate"
+    "generate": "npx prisma generate",
+    "seed": "dotenv -e .env.local -- npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

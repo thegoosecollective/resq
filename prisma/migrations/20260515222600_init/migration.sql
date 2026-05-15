@@ -10,6 +10,7 @@ CREATE TABLE "Building" (
     "name" TEXT NOT NULL,
     "accessCode" TEXT NOT NULL,
     "totalFloors" INTEGER NOT NULL,
+    "address" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Building_pkey" PRIMARY KEY ("id")
@@ -44,6 +45,9 @@ CREATE TABLE "Report" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Building_accessCode_key" ON "Building"("accessCode");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Building_address_key" ON "Building"("address");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Unit_buildingId_floor_unitNumber_key" ON "Unit"("buildingId", "floor", "unitNumber");
