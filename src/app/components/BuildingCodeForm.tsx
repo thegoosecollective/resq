@@ -19,7 +19,7 @@ export default function BuildingCodeForm() {
     if (result.success) {
       router.push(`/building/${result.building.id}`)
     } else {
-        setError(result.error)
+      setError(result.error)
       setIsLoading(false)
     }
   }

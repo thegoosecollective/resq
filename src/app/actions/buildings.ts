@@ -13,3 +13,10 @@ export async function lookupBuilding(code: string) {
 
   return { success: true as const, building }
 }
+
+export async function getBuildingById(id: number) {
+  const building = await prisma.building.findUnique({
+    where: { id }
+  })
+  return building
+}
