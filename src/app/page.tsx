@@ -1,5 +1,4 @@
-import BuildingCodeForm from '@/components/BuildingCodeForm'
-
+import BuildingCodeForm from '@/app/components/BuildingCodeForm'
 
 export default function Home() {
   return (
