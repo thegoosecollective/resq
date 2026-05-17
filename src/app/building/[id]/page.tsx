@@ -14,7 +14,7 @@ export default async function BuildingPage({ params }: {
     const building = await getBuildingById(parseInt(buildingId))
     
     if (!building) {
-        return <p>Building not found. Please reenter your access code <a href="/">here</a></p>
+        return <p>Building not found. Please re-enter your access code <a href="/">here</a></p>
       } 
     return(
         <div className="buildingPage">
