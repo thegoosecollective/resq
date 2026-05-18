@@ -14,9 +14,22 @@ export async function lookupBuilding(code: string) {
   return { success: true as const, building }
 }
 
+//only gets ID
 export async function getBuildingById(id: number) {
   const building = await prisma.building.findUnique({
     where: { id }
   })
   return building
+}
+
+//gets building + unit count
+export async function getBuildingWithUnits(id: number) {
+  return await prisma.building.findUnique({
+    where: { id },
+    include: {
+      units: {
+        orderBy: [{ floor: 'asc' }, { unitNumber: 'asc' }],
+      },
+    },
+  })
 }
