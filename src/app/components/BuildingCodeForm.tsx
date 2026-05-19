@@ -8,7 +8,7 @@ export default function BuildingCodeForm() {
   const router = useRouter()
   const [code, setCode] = useState('')           
   const [error, setError] = useState('')         
-  const [isLoading, setIsLoading] = useState(false)  
+  const [isSubmitting, setIsLoading] = useState(false)  
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()  
@@ -32,8 +32,8 @@ export default function BuildingCodeForm() {
         placeholder="Enter building code"
       />
       {error && <p>{error}</p>}
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? 'Finding building...' : 'Find Building'}
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Finding building...' : 'Find Building'}
       </button>
     </form>
   )
