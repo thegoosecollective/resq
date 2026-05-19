@@ -27,9 +27,7 @@ type Building = {
   }) {
     
     //getting floors from actual unit data instead of totalFloors for accuracy
-    const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
- 
     const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
     const [residentStatus, setResidentStatus] = useState<ResidentStatus | null>(null)
     const [resourceRequests, setResourceRequests] = useState<string[]>([])
@@ -38,7 +36,8 @@ type Building = {
     const [isSubmitting, setIsSubmitting] = useState(false)      
     const [error, setError] = useState('')         
 
-
+    const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
+    const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
     
     function handleFloorChange(floor: number) {
         setSelectedFloor(floor)
@@ -87,7 +86,50 @@ type Building = {
         setIsSubmitting(false)
       }
 
-    return(
-
-    )
+      return (
+        <div className="space-y-6">
+      
+          {/* error */}
+          {error && (
+            <p className="text-red-600 text-sm">{error}</p>
+          )}
+      
+          {/* floor dropdown */}
+          <div className="floorDropdown">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Floor
+            </label>
+            <select
+              value={selectedFloor ?? ''}
+              onChange={e => handleFloorChange(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg p-3 bg-white"
+            >
+              <option value="">Select your floor</option>
+              {floors.map(floor => (
+                <option key={floor} value={floor}>Floor {floor}</option>
+              ))}
+            </select>
+          </div>
+      
+        {/*Unit dropdown*/}
+        {selectedFloor && (
+                <div className="unitDropdown">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Unit
+                </label>
+                <select
+                  value={selectedUnitId ?? ''}
+                  onChange={e => handleUnitIDChange(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg p-3 bg-white"
+                >
+                  <option value="">Select your unit</option>
+                  {floorUnits.map(unit =>  (
+                    <option key={unit.id} value={unit.id}>Unit {unit.unitNumber}</option>
+                  ))}
+                </select>
+              </div>
+          )}
+    
+        </div>
+      )
 };
