@@ -16,7 +16,11 @@ type Building = {
     address: string
 }
   
-
+const statusOptions = [
+    { value: 'evacuated',  label: 'I am safe / evacuated',  style: 'bg-green-50 border-green-300 text-green-800' },
+    { value: 'assistance', label: 'I need assistance evacuating',       style: 'bg-yellow-50 border-yellow-300 text-yellow-800' },
+    { value: 'emergency',  label: '🚨 Emergency: imminent death', style: 'bg-red-50 border-red-300 text-red-800' },
+  ]
 
   export default function BuildingReportForm({
     building,
@@ -38,7 +42,7 @@ type Building = {
 
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
-    
+
     function handleFloorChange(floor: number) {
         setSelectedFloor(floor)
         setSelectedUnitId(null) 
@@ -111,7 +115,7 @@ type Building = {
             </select>
           </div>
       
-        {/*Unit dropdown*/}
+        {/* unit dropdown */}
         {selectedFloor && (
                 <div className="unitDropdown">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -129,7 +133,22 @@ type Building = {
                 </select>
               </div>
           )}
-    
+
+        {/* status buttons */}    
+        {selectedUnitId && (
+                <div className="statusButtonContainer">
+               <p>What is your current status?</p>
+               {statusOptions.map(option =>  (
+                    <button
+                    className={`${residentStatus === option.value ? 'ring-2 ring-offset-1 ring-current' : 'opacity-70'}`}
+                    key={option.value}
+                    onClick={() => handleStatusChange(option.value as ResidentStatus)}>
+                    {option.label}
+                  </button>
+                  ))}
+              </div>
+          )}
+
         </div>
       )
 };
