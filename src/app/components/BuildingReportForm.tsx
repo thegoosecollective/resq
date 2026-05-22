@@ -17,9 +17,9 @@ type Building = {
 }
   
 const statusOptions = [
-    { value: 'evacuated',  label: 'I am safe / evacuated',  style: 'bg-green-50 border-green-300 text-green-800' },
-    { value: 'assistance', label: 'I need assistance evacuating',       style: 'bg-yellow-50 border-yellow-300 text-yellow-800' },
-    { value: 'emergency',  label: '🚨 Emergency: imminent death', style: 'bg-red-50 border-red-300 text-red-800' },
+    { value: 'evacuated',  label: 'Everyone in my unit is out safely',  style: 'bg-green-50 border-green-300 text-green-800' },
+    { value: 'assistance', label: 'Some or all of us still need help getting out',       style: 'bg-yellow-50 border-yellow-300 text-yellow-800' },
+    { value: 'emergency',  label: 'Someone is in immediate life-threatening danger', style: 'bg-red-50 border-red-300 text-red-800' },
   ]
 
   const requestOptions = [
@@ -54,14 +54,28 @@ const statusOptions = [
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
 
+    function handleTotalOccupantsChange(value: number) {
+      setTotalOccupants(value)
+      // reset evacuated count when total changes
+      setOccupantsEvacuated(0) 
+      // reset status:  counts changed, situation unclear
+      setResidentStatus(null)  
+    }
+
     function handleOccupantsEvacuatedChange(value: number) {
-      if (!totalOccupants) return  
+      if (!totalOccupants) return
       
       if (value > totalOccupants) {
         setError('Evacuated occupants cannot exceed total occupants.')
         return
       }
-      setError('')
+      
+      // if counts no longer match, evacuated status is no longer valid
+      if (residentStatus === 'evacuated' && value !== totalOccupants) {
+        setResidentStatus(null)
+      }
+      
+      setError(null)
       setOccupantsEvacuated(value)
     }
 
@@ -72,6 +86,11 @@ const statusOptions = [
       
       function handleStatusChange(status: ResidentStatus) {
         setResidentStatus(status)
+
+          // clear resource requests if switching to evacuated
+        if (status === 'evacuated') {
+           setResourceRequests([])
+         }
       }
       
      function handleUnitIDChange(unit: number) {
@@ -160,10 +179,10 @@ const statusOptions = [
           
         {/* Occupant selection */}
          <div className="occupantSelectionContainer">
+          <p>How many people are/were in your unit?</p>
           <select
           disabled={!selectedUnitId}
-          onChange={e => setTotalOccupants(Number(e.target.value))}
-          value={totalOccupants ?? ''}
+          onChange={e => handleTotalOccupantsChange(Number(e.target.value))}          value={totalOccupants ?? ''}
           >
             <option value="">Total occupants</option>
               {occupantOptions.map(occupant => (
@@ -172,26 +191,38 @@ const statusOptions = [
           </select>
           </div>
 
-           {/* Evacuated selection */}
-         <div className="evacuateSelectionContainer">
-          <select
-disabled={!totalOccupants}
-onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
-          value={occupantsEvacuated ?? ''}
-          >
-            <option value="">Total evacuated occupants</option>
-            {occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(occupant => (
-              <option key={occupant} value={occupant}>{occupant}</option>
-            ))}
-          </select>
-          </div>
+
+ {/* Evacuated dropdown, only show when someone still needs help */}
+ {totalOccupants && (
+  <div className="evacuateSelectionContainer">
+    <p>How many have already made it out?</p>
+    <select
+      disabled={!totalOccupants}
+      onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
+      value={occupantsEvacuated ?? ''}
+    >
+      <option value="">How many have already made it out?</option>
+      <option value={0}>0 — nobody out yet</option>
+      {occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(occupant => (
+        <option key={occupant} value={occupant}>{occupant}</option>
+      ))}
+    </select>
+  </div>
+
+)}
 
 
         {/* status buttons */}    
         
             <div className="statusButtonContainer">
-               <p>What is your current status?</p>
-               {statusOptions.map(option =>  (
+               <p>What is the situation for those still inside?</p>
+
+            
+
+               {statusOptions.filter(option => {
+  if (option.value === 'evacuated' && occupantsEvacuated !== totalOccupants) return false
+  return true
+}).map(option =>  (
                     <button
                     disabled={!selectedUnitId}
                     className={`${residentStatus === option.value ? 'ring-2 ring-offset-1 ring-current' : 'opacity-70'}`}
@@ -200,6 +231,9 @@ onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
                     {option.label}
                   </button>
                   ))}
+                  <p>
+Please select honestly as accurate status helps responders reach those who need help most
+</p>
               </div>
           
 
@@ -220,7 +254,31 @@ onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
               </label>
               ))}
               </div>
-          </div>
     
+    
+
+     {/* Notes */}  
+     
+    
+      <div>
+<textarea 
+disabled={!residentStatus}
+className="w-full border border-gray-300 rounded-lg p-3 h-28 resize-none"
+onChange={e => setNotes(e.target.value)}
+  ></textarea>
+      </div>
+     
+
+     {/* Submit button */}
+     <div>
+     <button
+  onClick={handleSubmit}
+  disabled={isSubmitting}
+>
+  {isSubmitting ? 'Submitting...' : 'Submit Report'}
+</button>
+
+     </div>
+     </div>
       )
 };
