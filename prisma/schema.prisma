@@ -48,10 +48,8 @@ model Report {
   totalOccupants Int          
   occupantsEvacuated Int            @default(0) 
   residentStatus   ResidentStatus
-  responderStatus  ResponderStatus?
   resourceRequests String[]
   notes            String?
-  ipAddress        String?
   submittedAt      DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 }

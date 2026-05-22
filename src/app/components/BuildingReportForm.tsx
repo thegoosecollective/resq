@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { submitReport } from '@/app/actions/reports'
 import { ResidentStatus } from '@prisma/client'
+import { useRouter } from 'next/navigation'
 
 type Unit = {
     id: number
@@ -39,13 +40,14 @@ const statusOptions = [
     units: Unit[]
   }) {
     
+    const router = useRouter()
+
     //getting floors from actual unit data instead of totalFloors for accuracy
     const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
     const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
     const [residentStatus, setResidentStatus] = useState<ResidentStatus | null>(null)
     const [resourceRequests, setResourceRequests] = useState<string[]>([])
     const [notes, setNotes] = useState('')      
-    const [isSubmitted, setIsSubmitted] = useState(false)  
     const [isSubmitting, setIsSubmitting] = useState(false)      
     const [error, setError] = useState<string | null>(null)
     const [totalOccupants, setTotalOccupants] = useState<number | null>(null)
@@ -57,10 +59,9 @@ const statusOptions = [
 
     function handleTotalOccupantsChange(value: number) {
       setTotalOccupants(value)
-      // reset evacuated count when total changes
-      setOccupantsEvacuated(0) 
-      // reset status:  counts changed, situation unclear
-      setResidentStatus(null)  
+      setOccupantsEvacuated(0)
+      setResidentStatus(null)
+      setFieldErrors(prev => ({ ...prev, totalOccupants: '' }))
     }
 
     function handleOccupantsEvacuatedChange(value: number) {
@@ -96,8 +97,9 @@ const statusOptions = [
          }
       }
       
-     function handleUnitIDChange(unit: number) {
+      function handleUnitIDChange(unit: number) {
         setSelectedUnitId(unit)
+        setFieldErrors(prev => ({ ...prev, unit: '' }))
       }
 
       function toggleResource(value: string) {
@@ -121,9 +123,6 @@ const statusOptions = [
           resourceRequests.length === 0
         ) errors.resources = 'Please select at least one resource'
       
-        console.log('errors object:', errors) // ← add this
-        console.log('fieldErrors state:', fieldErrors) // ← and this
-      
         if (Object.keys(errors).length > 0) {
           setFieldErrors(errors)
           return
@@ -143,7 +142,7 @@ setFieldErrors({})
         })
       
         if (result.success) {
-          setIsSubmitted(true)
+          router.push(`/building/${building.id}/report/confirmation?unitId=${selectedUnitId}`)
         } else {
           setError(result.error || 'Something went wrong. Please try again.')
         }
