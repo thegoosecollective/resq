@@ -45,6 +45,8 @@ model Report {
   id               Int              @id @default(autoincrement())
   unitId           Int              @unique
   unit             Unit             @relation(fields: [unitId], references: [id])
+  totalOccupants Int          
+  occupantsEvacuated Int            @default(0) 
   residentStatus   ResidentStatus
   responderStatus  ResponderStatus?
   resourceRequests String[]

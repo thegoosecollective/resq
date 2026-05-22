@@ -22,6 +22,15 @@ const statusOptions = [
     { value: 'emergency',  label: '🚨 Emergency: imminent death', style: 'bg-red-50 border-red-300 text-red-800' },
   ]
 
+  const requestOptions = [
+    { value: 'mobility',  label: 'Mobility assistance' },
+    { value: 'pet', label: 'Pet evacuation'      },
+    { value: 'medical',  label: 'Medical assistance' },
+  ]
+
+  const occupantOptions = Array.from({ length: 15 }, (_, i) => i + 1)
+
+
   export default function BuildingReportForm({
     building,
     units,
@@ -38,10 +47,23 @@ const statusOptions = [
     const [notes, setNotes] = useState('')      
     const [isSubmitted, setIsSubmitted] = useState(false)  
     const [isSubmitting, setIsSubmitting] = useState(false)      
-    const [error, setError] = useState('')         
-
+    const [error, setError] = useState<string | null>(null)
+    const [totalOccupants, setTotalOccupants] = useState<number | null>(null)
+    const [occupantsEvacuated, setOccupantsEvacuated] = useState<number>(0)
+   
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
+
+    function handleOccupantsEvacuatedChange(value: number) {
+      if (!totalOccupants) return  
+      
+      if (value > totalOccupants) {
+        setError('Evacuated occupants cannot exceed total occupants.')
+        return
+      }
+      setError('')
+      setOccupantsEvacuated(value)
+    }
 
     function handleFloorChange(floor: number) {
         setSelectedFloor(floor)
@@ -66,7 +88,7 @@ const statusOptions = [
 
       async function handleSubmit() {
         // checks if mandatory fields are complete
-        if (!selectedFloor || !selectedUnitId || !residentStatus) {
+      if (!selectedFloor || !selectedUnitId || !residentStatus || !totalOccupants) {
           setError('Please select your floor, unit and status before submitting.')
           return
         }
@@ -77,6 +99,8 @@ const statusOptions = [
         const result = await submitReport({
           unitId: selectedUnitId,
           residentStatus,
+          totalOccupants: totalOccupants ?? 0, 
+          occupantsEvacuated,
           resourceRequests,
           notes: notes.trim() || undefined,
         })
@@ -116,12 +140,13 @@ const statusOptions = [
           </div>
       
         {/* unit dropdown */}
-        {selectedFloor && (
+        
                 <div className="unitDropdown">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Unit
                 </label>
                 <select
+                 disabled={!selectedFloor}
                   value={selectedUnitId ?? ''}
                   onChange={e => handleUnitIDChange(Number(e.target.value))}
                   className="w-full border border-gray-300 rounded-lg p-3 bg-white"
@@ -132,14 +157,43 @@ const statusOptions = [
                   ))}
                 </select>
               </div>
-          )}
+          
+        {/* Occupant selection */}
+         <div className="occupantSelectionContainer">
+          <select
+          disabled={!selectedUnitId}
+          onChange={e => setTotalOccupants(Number(e.target.value))}
+          value={totalOccupants ?? ''}
+          >
+            <option value="">Total occupants</option>
+              {occupantOptions.map(occupant => (
+                <option key={occupant} value={occupant}>{occupant}</option>
+              ))}
+          </select>
+          </div>
+
+           {/* Evacuated selection */}
+         <div className="evacuateSelectionContainer">
+          <select
+disabled={!totalOccupants}
+onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
+          value={occupantsEvacuated ?? ''}
+          >
+            <option value="">Total evacuated occupants</option>
+            {occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(occupant => (
+              <option key={occupant} value={occupant}>{occupant}</option>
+            ))}
+          </select>
+          </div>
+
 
         {/* status buttons */}    
-        {selectedUnitId && (
-                <div className="statusButtonContainer">
+        
+            <div className="statusButtonContainer">
                <p>What is your current status?</p>
                {statusOptions.map(option =>  (
                     <button
+                    disabled={!selectedUnitId}
                     className={`${residentStatus === option.value ? 'ring-2 ring-offset-1 ring-current' : 'opacity-70'}`}
                     key={option.value}
                     onClick={() => handleStatusChange(option.value as ResidentStatus)}>
@@ -147,8 +201,26 @@ const statusOptions = [
                   </button>
                   ))}
               </div>
-          )}
+          
 
-        </div>
+  {/* Resource dropdown */}    
+        
+                <div className="resourceRequestsContainer">
+               <p>Resource requests</p>
+               {requestOptions.map(option =>  (
+                <label key={option.value} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={option.value}
+                  checked={resourceRequests.includes(option.value)}
+                  onChange={() => toggleResource(option.value)}
+                  disabled={residentStatus !== 'assistance' && residentStatus !== 'emergency'}
+                />
+                {option.label}
+              </label>
+              ))}
+              </div>
+          </div>
+    
       )
 };

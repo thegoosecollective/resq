@@ -6,12 +6,16 @@ import { ResidentStatus } from '@prisma/client'
 export async function submitReport({
   unitId,
   residentStatus,
+  totalOccupants,
+  occupantsEvacuated,
   resourceRequests,
   notes,
 }: {
   unitId: number
   residentStatus: ResidentStatus
   resourceRequests: string[]
+  totalOccupants: number
+  occupantsEvacuated: number
   notes?: string
 }) {
   try {
@@ -19,11 +23,14 @@ export async function submitReport({
       where: { unitId },
       update: { residentStatus, 
                 resourceRequests, 
+                totalOccupants,
+                occupantsEvacuated,
                 notes, 
                 updatedAt: new Date() 
             },
       create: { unitId, 
-                residentStatus, 
+                residentStatus, totalOccupants,
+                occupantsEvacuated,
                 resourceRequests, notes },
     })
     return { success: true, report }
