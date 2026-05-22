@@ -50,7 +50,8 @@ const statusOptions = [
     const [error, setError] = useState<string | null>(null)
     const [totalOccupants, setTotalOccupants] = useState<number | null>(null)
     const [occupantsEvacuated, setOccupantsEvacuated] = useState<number>(0)
-   
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
 
@@ -68,6 +69,7 @@ const statusOptions = [
       if (value > totalOccupants) {
         setError('Evacuated occupants cannot exceed total occupants.')
         return
+
       }
       
       // if counts no longer match, evacuated status is no longer valid
@@ -80,13 +82,14 @@ const statusOptions = [
     }
 
     function handleFloorChange(floor: number) {
-        setSelectedFloor(floor)
-        setSelectedUnitId(null) 
-      }
+      setSelectedFloor(floor)
+      setSelectedUnitId(null)
+      setFieldErrors(prev => ({ ...prev, floor: '' }))  
+    }
       
       function handleStatusChange(status: ResidentStatus) {
         setResidentStatus(status)
-
+        setFieldErrors(prev => ({ ...prev, status: '' }))
           // clear resource requests if switching to evacuated
         if (status === 'evacuated') {
            setResourceRequests([])
@@ -103,22 +106,37 @@ const statusOptions = [
             ? prev.filter(r => r !== value)
             : [...prev, value]
         )
+        setFieldErrors(prev => ({ ...prev, resources: '' }))
       }
 
       async function handleSubmit() {
-        // checks if mandatory fields are complete
-      if (!selectedFloor || !selectedUnitId || !residentStatus || !totalOccupants) {
-          setError('Please select your floor, unit and status before submitting.')
+        const errors: Record<string, string> = {}
+      
+        if (!selectedFloor) errors.floor = 'Please select a floor'
+        if (!selectedUnitId) errors.unit = 'Please select a unit'
+        if (!totalOccupants) errors.totalOccupants = 'Please select total occupants'
+        if (!residentStatus) errors.status = 'Please select a status'
+        if (
+          (residentStatus === 'assistance' || residentStatus === 'emergency') && 
+          resourceRequests.length === 0
+        ) errors.resources = 'Please select at least one resource'
+      
+        console.log('errors object:', errors) // ← add this
+        console.log('fieldErrors state:', fieldErrors) // ← and this
+      
+        if (Object.keys(errors).length > 0) {
+          setFieldErrors(errors)
           return
         }
-      
+
+setFieldErrors({})
         setIsSubmitting(true)
         setError(null) 
       
         const result = await submitReport({
-          unitId: selectedUnitId,
-          residentStatus,
-          totalOccupants: totalOccupants ?? 0, 
+          unitId: selectedUnitId!, 
+          residentStatus: residentStatus!,
+          totalOccupants: totalOccupants ?? 0,
           occupantsEvacuated,
           resourceRequests,
           notes: notes.trim() || undefined,
@@ -142,15 +160,18 @@ const statusOptions = [
           )}
       
           {/* floor dropdown */}
-          <div className="floorDropdown">
+
+          <div className={`floorDropdownContainer ${fieldErrors.floor ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+          {fieldErrors.floor && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.floor}</p>
+)}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Floor
             </label>
             <select
               value={selectedFloor ?? ''}
               onChange={e => handleFloorChange(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-lg p-3 bg-white"
-            >
+              className={`border ${fieldErrors.floor ? 'border-red-500' : 'border-gray-300'}`}>
               <option value="">Select your floor</option>
               {floors.map(floor => (
                 <option key={floor} value={floor}>Floor {floor}</option>
@@ -159,8 +180,11 @@ const statusOptions = [
           </div>
       
         {/* unit dropdown */}
-        
-                <div className="unitDropdown">
+
+        <div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : 'border border-gray-300 rounded-lg p-2'}>
+        {fieldErrors.unit && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.unit}</p>
+)}
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Unit
                 </label>
@@ -168,8 +192,7 @@ const statusOptions = [
                  disabled={!selectedFloor}
                   value={selectedUnitId ?? ''}
                   onChange={e => handleUnitIDChange(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-lg p-3 bg-white"
-                >
+                   >
                   <option value="">Select your unit</option>
                   {floorUnits.map(unit =>  (
                     <option key={unit.id} value={unit.id}>Unit {unit.unitNumber}</option>
@@ -178,7 +201,11 @@ const statusOptions = [
               </div>
           
         {/* Occupant selection */}
-         <div className="occupantSelectionContainer">
+
+        <div className={`occupantSelectionContainer ${fieldErrors.totalOccupants ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+        {fieldErrors.totalOccupants && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.totalOccupants}</p>
+)}
           <p>How many people are/were in your unit?</p>
           <select
           disabled={!selectedUnitId}
@@ -193,8 +220,14 @@ const statusOptions = [
 
 
  {/* Evacuated dropdown, only show when someone still needs help */}
+
+
  {totalOccupants && (
-  <div className="evacuateSelectionContainer">
+    <div className={`evacuateSelectionContainer ${fieldErrors.evacuated ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+    
+ {fieldErrors.evacuated && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.evacuated}</p>
+)}
     <p>How many have already made it out?</p>
     <select
       disabled={!totalOccupants}
@@ -213,14 +246,22 @@ const statusOptions = [
 
 
         {/* status buttons */}    
-        
-            <div className="statusButtonContainer">
+ 
+            <div className={`statusButtonContainer ${fieldErrors.status ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+            {fieldErrors.status && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.status}</p>
+)}
                <p>What is the situation for those still inside?</p>
 
             
 
                {statusOptions.filter(option => {
-  if (option.value === 'evacuated' && occupantsEvacuated !== totalOccupants) return false
+  if (
+    option.value === 'evacuated' && 
+    // only filter after total is selected
+    totalOccupants !== null &&  
+    occupantsEvacuated !== totalOccupants
+  ) return false
   return true
 }).map(option =>  (
                     <button
@@ -237,12 +278,18 @@ Please select honestly as accurate status helps responders reach those who need 
               </div>
           
 
-  {/* Resource dropdown */}    
+  {/* Resource request */}    
+
         
-                <div className="resourceRequestsContainer">
+               <div className={`resourceRequestsContainer ${fieldErrors.resources ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+              
+               {fieldErrors.resources && (
+  <p className="text-red-500 text-sm mt-1">{fieldErrors.resources}</p>
+)}
                <p>Resource requests</p>
                {requestOptions.map(option =>  (
                 <label key={option.value} className="flex items-center gap-2">
+               
                 <input
                   type="checkbox"
                   value={option.value}
@@ -261,6 +308,7 @@ Please select honestly as accurate status helps responders reach those who need 
      
     
       <div>
+        <p>Please include any relevant notes:</p>
 <textarea 
 disabled={!residentStatus}
 className="w-full border border-gray-300 rounded-lg p-3 h-28 resize-none"
@@ -269,11 +317,10 @@ onChange={e => setNotes(e.target.value)}
       </div>
      
 
-     {/* Submit button */}
      <div>
      <button
+  type="button"  
   onClick={handleSubmit}
-  disabled={isSubmitting}
 >
   {isSubmitting ? 'Submitting...' : 'Submit Report'}
 </button>

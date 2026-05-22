@@ -17,8 +17,10 @@ export async function submitReport({
   totalOccupants: number
   occupantsEvacuated: number
   notes?: string
-}) {
+})
+ {
   try {
+    console.log('submitReport called with:', { unitId, residentStatus, totalOccupants, occupantsEvacuated })
     const report = await prisma.report.upsert({
       where: { unitId },
       update: { residentStatus, 
@@ -34,8 +36,8 @@ export async function submitReport({
                 resourceRequests, notes },
     })
     return { success: true, report }
-  } catch (error) {
-    console.error(error)
+  }  catch (error) {
+    console.error('DB error:', error)
     return { success: false, error: 'Failed to submit report. Please try again' }
   }
 }
