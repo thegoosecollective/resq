@@ -35,7 +35,10 @@ export default function DashboardView({
   }) {
     
     const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
-
+    const reportedCount = units.filter(u => u.report !== null).length
+    const totalCount = units.length
+    const emergencyCount = units.filter(u => u.report?.residentStatus === 'emergency').length
+    const assistanceCount = units.filter(u => u.report?.residentStatus === 'assistance').length
   // derived data
   const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
   const visibleUnits = selectedFloor
@@ -45,6 +48,10 @@ export default function DashboardView({
   return (
 <div>
 <h1>{building.name} - {building.address}</h1>
+<p>{reportedCount}/{totalCount} units reporting</p>
+{isResponder && (
+  <p>🔴 {emergencyCount} critical · 🟡 {assistanceCount} need assistance</p>
+)}
 {/*Floor dropdown*/}
 <div>
 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -78,7 +85,7 @@ export default function DashboardView({
     
       style={{ backgroundColor: colour }}
     >
-      <p>Unit {unit.unitNumber}</p>
+      <p>{unit.unitNumber}</p>
       {unit.report && (
         <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
       )}
