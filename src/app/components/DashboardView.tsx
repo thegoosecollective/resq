@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { getStatusDisplay } from '@/lib/reportUtils'
 import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 
 
 type Report = {
@@ -74,9 +75,8 @@ export default function DashboardView({
       style={{ backgroundColor: colour }}
     >
       <p>Unit {unit.unitNumber}</p>
-      <p>{label}</p>
       {unit.report && (
-        <p>{unit.report.occupantsEvacuated} of {unit.report.totalOccupants} out</p>
+        <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
       )}
     </Link>
   )
