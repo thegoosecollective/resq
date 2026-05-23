@@ -35,24 +35,52 @@ const statusOptions = [
   export default function BuildingReportForm({
     building,
     units,
+    existingReport,
   }: {
     building: Building
     units: Unit[]
+    existingReport?: {
+      residentStatus: ResidentStatus
+      resourceRequests: string[]
+      totalOccupants: number
+      occupantsEvacuated: number
+      notes: string | null
+      unitId: number
+      updatedAt: Date 
+      unit: {
+        floor: number
+        unitNumber: string
+      }
+    }
   }) {
     
     const router = useRouter()
 
     //getting floors from actual unit data instead of totalFloors for accuracy
-    const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
-    const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null)
-    const [residentStatus, setResidentStatus] = useState<ResidentStatus | null>(null)
-    const [resourceRequests, setResourceRequests] = useState<string[]>([])
-    const [notes, setNotes] = useState('')      
+    const [selectedFloor, setSelectedFloor] = useState<number | null>(
+      existingReport?.unit.floor ?? null
+    )
+    const [selectedUnitId, setSelectedUnitId] = useState<number | null>(
+      existingReport?.unitId ?? null
+    )
+    const [residentStatus, setResidentStatus] = useState<ResidentStatus | null>(
+      existingReport?.residentStatus ?? null
+    )
+    
+    
+    const [resourceRequests, setResourceRequests] = useState<string[]>(
+      existingReport?.resourceRequests ?? []
+    )
+    
+    const [notes, setNotes] = useState<string>(
+      existingReport?.notes ?? ''  
+    )
     const [isSubmitting, setIsSubmitting] = useState(false)      
     const [error, setError] = useState<string | null>(null)
-    const [totalOccupants, setTotalOccupants] = useState<number | null>(null)
-    const [occupantsEvacuated, setOccupantsEvacuated] = useState<number | null>(null)
+    const [totalOccupants, setTotalOccupants] = useState<number | null>(      existingReport?.totalOccupants ?? null)
+    const [occupantsEvacuated, setOccupantsEvacuated] = useState<number | null>(existingReport?.occupantsEvacuated ?? null)
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+    const [staleWarning, setStaleWarning] = useState<Date | null>(null)
 
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
@@ -113,30 +141,13 @@ const statusOptions = [
         setFieldErrors(prev => ({ ...prev, resources: '' }))
       }
 
-      async function handleSubmit() {
-        const errors: Record<string, string> = {}
-      
-        if (!selectedFloor) errors.floor = 'Please select a floor'
-        if (!selectedUnitId) errors.unit = 'Please select a unit'
-        if (!totalOccupants) errors.totalOccupants = 'Please select total occupants'
-        if (occupantsEvacuated === null) errors.evacuated = 'Please select how many have evacuated'
-        if (!residentStatus) errors.status = 'Please select a status'
-        if (
-          (residentStatus === 'assistance' || residentStatus === 'emergency') && 
-          resourceRequests.length === 0
-        ) errors.resources = 'Please select at least one resource'
-      
-        if (Object.keys(errors).length > 0) {
-          setFieldErrors(errors)
-          return
-        }
-
-setFieldErrors({})
+      async function performSubmit() {
+        setFieldErrors({})
         setIsSubmitting(true)
-        setError(null) 
+        setError(null)
       
         const result = await submitReport({
-          unitId: selectedUnitId!, 
+          unitId: selectedUnitId!,
           residentStatus: residentStatus!,
           totalOccupants: totalOccupants ?? 0,
           occupantsEvacuated: occupantsEvacuated ?? 0,
@@ -152,7 +163,38 @@ setFieldErrors({})
       
         setIsSubmitting(false)
       }
-
+      
+      async function handleConfirmedSubmit() {
+        setStaleWarning(null)
+        await performSubmit()
+      }
+      
+      async function handleSubmit() {
+        const errors: Record<string, string> = {}
+      
+        if (!selectedFloor) errors.floor = 'Please select a floor'
+        if (!selectedUnitId) errors.unit = 'Please select a unit'
+        if (!totalOccupants) errors.totalOccupants = 'Please select total occupants'
+        if (occupantsEvacuated === null) errors.evacuated = 'Please select how many have evacuated'
+        if (!residentStatus) errors.status = 'Please select a status'
+        if (
+          (residentStatus === 'assistance' || residentStatus === 'emergency') &&
+          resourceRequests.length === 0
+        ) errors.resources = 'Please select at least one resource'
+      
+        if (Object.keys(errors).length > 0) {
+          setFieldErrors(errors)
+          return
+        }
+      
+        // warn if overwriting a different unit's report
+        if (existingReport && selectedUnitId !== existingReport.unitId) {
+          setStaleWarning(new Date(existingReport.updatedAt))
+          return
+        }
+      
+        await performSubmit()
+      }
       return (
         <div className="space-y-6">
       
@@ -161,6 +203,17 @@ setFieldErrors({})
             <p className="text-red-600 text-sm">{error}</p>
           )}
       
+      {staleWarning && (
+  <div className="border border-yellow-400 bg-yellow-50 rounded-lg p-4">
+
+<p className="font-medium text-yellow-800">⚠️ You're changing units</p>
+<p className="text-sm text-yellow-700">
+  You're submitting for a different unit than your original report. Your original report for Unit {existingReport?.unit.unitNumber} will remain in the system.
+</p>
+<p className="text-sm text-yellow-700">Continue?</p>
+  </div>
+)}
+
           {/* floor dropdown */}
 
           <div className={`floorDropdownContainer ${fieldErrors.floor ? 'border border-red-500 rounded-lg p-2' : ''}`}>
@@ -327,6 +380,7 @@ Please select honestly as accurate status helps responders reach those who need 
       <div>
         <p>Please include any relevant notes:</p>
 <textarea 
+  value={notes}
 disabled={!residentStatus}
 className="w-full border border-gray-300 rounded-lg p-3 h-28 resize-none"
 onChange={e => setNotes(e.target.value)}

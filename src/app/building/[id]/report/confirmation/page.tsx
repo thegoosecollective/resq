@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getReportByUnitID } from '@/app/actions/reports'
 import { getStatusDisplay } from '@/lib/reportUtils'
 import { getResourceLabel } from '@/lib/reportUtils'
+import Link from 'next/link'
 
 
 export default async function ConfirmationPage({
@@ -28,7 +29,7 @@ export default async function ConfirmationPage({
   return (
     <div>
     <p>Your report has been updated</p>
-    <h2>Unit {report.unit.unitNumber} — Floor {report.unit.floor}</h2>   
+    <h2>Unit {report.unit.unitNumber}</h2>   
     <button style={{ backgroundColor: colour, color: 'white' }} disabled>{label}</button>
     <p>Last updated: {new Date(report.submittedAt).toLocaleString()}</p>
 
@@ -45,8 +46,12 @@ export default async function ConfirmationPage({
    <div>
     {report.notes}
    </div>
-   <button type="button">Edit report</button>
-   <button type="button">Wrong unit? Click here</button>
+   <Link href={`/building/${id}/report?unitId=${report.unitId}`}>
+  Edit report
+</Link>
+<Link href={`/building/${id}/report`}>
+  Wrong unit? Click here
+</Link>
     </div>
 
   )
