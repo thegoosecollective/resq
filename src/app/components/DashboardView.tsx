@@ -2,8 +2,6 @@
 import { useState } from 'react';
 import { getStatusDisplay } from '@/lib/reportUtils'
 import Link from 'next/link'
-export const dynamic = 'force-dynamic'
-
 
 type Report = {
     residentStatus: string
@@ -28,10 +26,12 @@ type Report = {
 
 export default function DashboardView({
     building,
-    units
+    units,
+    isResponder
   }: {
     building: Building
     units: Unit[]
+    isResponder: boolean
   }) {
     
     const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
@@ -71,7 +71,11 @@ export default function DashboardView({
   return (
     <Link
       key={unit.id}
-      href={`/building/${building.id}/unit/${unit.id}`}
+      href={isResponder 
+        ? `/building/${building.id}/unit/${unit.id}?responder=true`
+        : `/building/${building.id}/unit/${unit.id}`
+      }
+    
       style={{ backgroundColor: colour }}
     >
       <p>Unit {unit.unitNumber}</p>
