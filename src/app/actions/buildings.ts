@@ -33,3 +33,18 @@ export async function getBuildingWithUnits(id: number) {
     },
   })
 }
+
+//getting  reports for all units on dashboard
+export async function getBuildingReports(id: number) {
+  return await prisma.building.findUnique({
+    where: { id },
+    include: {
+      units: {
+        orderBy: [{ floor: 'asc' }, { unitNumber: 'asc' }],
+        include: {
+          report: true  
+        }
+      }
+    }
+  })
+}
