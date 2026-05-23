@@ -42,9 +42,9 @@ export async function submitReport({
   }
 }
 
-export async function getReportByUnitID(id: number){
-  const report = await prisma.report.findUnique({
-    where: { unitId: id }
+export async function getReportByUnitID(id: number) {
+  return await prisma.report.findUnique({
+    where: { unitId: id },
+    include: { unit: true }  
   })
-  return report
 }
