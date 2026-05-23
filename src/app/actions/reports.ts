@@ -20,7 +20,6 @@ export async function submitReport({
 })
  {
   try {
-    console.log('submitReport called with:', { unitId, residentStatus, totalOccupants, occupantsEvacuated })
     const report = await prisma.report.upsert({
       where: { unitId },
       update: { residentStatus, 
@@ -37,7 +36,15 @@ export async function submitReport({
     })
     return { success: true, report }
   }  catch (error) {
-    console.error('DB error:', error)
+    console.error('FULL ERROR:', JSON.stringify(error, null, 2))
+
     return { success: false, error: 'Failed to submit report. Please try again' }
   }
+}
+
+export async function getReportByUnitID(id: number){
+  const report = await prisma.report.findUnique({
+    where: { unitId: id }
+  })
+  return report
 }

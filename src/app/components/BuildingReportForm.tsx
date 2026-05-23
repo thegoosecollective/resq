@@ -51,18 +51,21 @@ const statusOptions = [
     const [isSubmitting, setIsSubmitting] = useState(false)      
     const [error, setError] = useState<string | null>(null)
     const [totalOccupants, setTotalOccupants] = useState<number | null>(null)
-    const [occupantsEvacuated, setOccupantsEvacuated] = useState<number>(0)
+    const [occupantsEvacuated, setOccupantsEvacuated] = useState<number | null>(null)
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
     const floors = [...new Set(units.map(u => u.floor))].sort((a, b) => a - b)
     const floorUnits = selectedFloor ? units.filter(u => u.floor === selectedFloor) : []
+    const availableResources = totalOccupants !== null && occupantsEvacuated === totalOccupants
+      ? requestOptions.filter(r => r.value === 'pet')
+      : requestOptions
 
-    function handleTotalOccupantsChange(value: number) {
-      setTotalOccupants(value)
-      setOccupantsEvacuated(0)
-      setResidentStatus(null)
-      setFieldErrors(prev => ({ ...prev, totalOccupants: '' }))
-    }
+      function handleTotalOccupantsChange(value: number) {
+        setTotalOccupants(value)
+        setOccupantsEvacuated(null)  // ← was 0
+        setResidentStatus(null)
+        setFieldErrors(prev => ({ ...prev, totalOccupants: '' }))
+      }
 
     function handleOccupantsEvacuatedChange(value: number) {
       if (!totalOccupants) return
@@ -70,7 +73,6 @@ const statusOptions = [
       if (value > totalOccupants) {
         setError('Evacuated occupants cannot exceed total occupants.')
         return
-
       }
       
       // if counts no longer match, evacuated status is no longer valid
@@ -117,6 +119,7 @@ const statusOptions = [
         if (!selectedFloor) errors.floor = 'Please select a floor'
         if (!selectedUnitId) errors.unit = 'Please select a unit'
         if (!totalOccupants) errors.totalOccupants = 'Please select total occupants'
+        if (occupantsEvacuated === null) errors.evacuated = 'Please select how many have evacuated'
         if (!residentStatus) errors.status = 'Please select a status'
         if (
           (residentStatus === 'assistance' || residentStatus === 'emergency') && 
@@ -136,7 +139,7 @@ setFieldErrors({})
           unitId: selectedUnitId!, 
           residentStatus: residentStatus!,
           totalOccupants: totalOccupants ?? 0,
-          occupantsEvacuated,
+          occupantsEvacuated: occupantsEvacuated ?? 0,
           resourceRequests,
           notes: notes.trim() || undefined,
         })
@@ -218,13 +221,11 @@ setFieldErrors({})
           </div>
 
 
- {/* Evacuated dropdown, only show when someone still needs help */}
+ {/* Evacuated dropdown */}
 
-
- {totalOccupants && (
     <div className={`evacuateSelectionContainer ${fieldErrors.evacuated ? 'border border-red-500 rounded-lg p-2' : ''}`}>
     
- {fieldErrors.evacuated && (
+  {fieldErrors.evacuated && (
   <p className="text-red-500 text-sm mt-1">{fieldErrors.evacuated}</p>
 )}
     <p>How many have already made it out?</p>
@@ -232,8 +233,9 @@ setFieldErrors({})
       disabled={!totalOccupants}
       onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
       value={occupantsEvacuated ?? ''}
-    >
-      <option value="">How many have already made it out?</option>
+      >
+<option value="">Select</option>
+
       <option value={0}>0 — nobody out yet</option>
       {occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(occupant => (
         <option key={occupant} value={occupant}>{occupant}</option>
@@ -241,7 +243,7 @@ setFieldErrors({})
     </select>
   </div>
 
-)}
+
 
 
         {/* status buttons */}    
@@ -250,19 +252,31 @@ setFieldErrors({})
             {fieldErrors.status && (
   <p className="text-red-500 text-sm mt-1">{fieldErrors.status}</p>
 )}
-               <p>What is the situation for those still inside?</p>
-
+<p className="text-sm text-gray-500">
+  {totalOccupants !== null && occupantsEvacuated === totalOccupants
+    ? 'All occupants accounted for. Use resource requests for pet evacuation.'
+    : 'Status refers to people only. Use resource requests for pet evacuation.'
+  }
+</p>
             
 
-               {statusOptions.filter(option => {
+{statusOptions.filter(option => {
+  // hide evacuated if not everyone is out
   if (
-    option.value === 'evacuated' && 
-    // only filter after total is selected
-    totalOccupants !== null &&  
+    option.value === 'evacuated' &&
+    totalOccupants !== null &&
     occupantsEvacuated !== totalOccupants
   ) return false
+
+  // hide assistance/emergency if everyone is out
+  if (
+    (option.value === 'assistance' || option.value === 'emergency') &&
+    totalOccupants !== null &&
+    occupantsEvacuated === totalOccupants
+  ) return false
+
   return true
-}).map(option =>  (
+}).map(option => (
                     <button
                     disabled={!selectedUnitId}
                     className={`${residentStatus === option.value ? 'ring-2 ring-offset-1 ring-current' : 'opacity-70'}`}
@@ -286,7 +300,7 @@ Please select honestly as accurate status helps responders reach those who need 
   <p className="text-red-500 text-sm mt-1">{fieldErrors.resources}</p>
 )}
                <p>Resource requests</p>
-               {requestOptions.map(option =>  (
+               {availableResources.map(option =>  (
                 <label key={option.value} className="flex items-center gap-2">
                
                 <input
@@ -294,7 +308,11 @@ Please select honestly as accurate status helps responders reach those who need 
                   value={option.value}
                   checked={resourceRequests.includes(option.value)}
                   onChange={() => toggleResource(option.value)}
-                  disabled={residentStatus !== 'assistance' && residentStatus !== 'emergency'}
+                  disabled={
+                    residentStatus !== 'assistance' && 
+                    residentStatus !== 'emergency' && 
+                    !(residentStatus === 'evacuated' && occupantsEvacuated === totalOccupants)
+                  }
                 />
                 {option.label}
               </label>

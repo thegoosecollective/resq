@@ -7,7 +7,6 @@ export default async function ReportPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  // ✅ fetching happens inside the function
   const { id } = await params
   const building = await getBuildingWithUnits(Number(id))
   if (!building) notFound()
