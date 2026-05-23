@@ -4,11 +4,12 @@ import { getStatusDisplay } from '@/lib/reportUtils'
 import Link from 'next/link'
 
 type Report = {
-    residentStatus: string
-    resourceRequests: string[]
-    totalOccupants: number
-    occupantsEvacuated: number
-  }
+  residentStatus: string
+  responderStatus: string | null 
+  resourceRequests: string[]
+  totalOccupants: number
+  occupantsEvacuated: number
+}
   
   type Unit = {
     id: number
@@ -70,10 +71,12 @@ export default function DashboardView({
 {/*Unit display*/}
 <div>         
 {visibleUnits.map(unit => {
-  const { colour, label } = getStatusDisplay(
-    unit.report?.residentStatus ?? null,
-    unit.report?.resourceRequests ?? []
-  )
+ const { colour, label } = getStatusDisplay(
+  unit.report?.residentStatus ?? null,
+  unit.report?.resourceRequests ?? [],
+  unit.report?.responderStatus ?? null,
+  isResponder
+)
 
   return (
     <Link
