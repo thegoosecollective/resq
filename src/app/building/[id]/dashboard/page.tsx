@@ -14,7 +14,6 @@ export default async function DashboardPage({
 
   return (
     <div>
-      <h1>{building.name}</h1>
       <DashboardView
   building={building}
   units={building.units}  

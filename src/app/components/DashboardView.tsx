@@ -1,10 +1,8 @@
 'use client'
 import { useState } from 'react';
 import { getStatusDisplay } from '@/lib/reportUtils'
-import { ResidentStatus } from '@prisma/client'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { report } from 'process';
+
 
 type Report = {
     residentStatus: string
@@ -45,6 +43,45 @@ export default function DashboardView({
 
   return (
 <div>
-    
-</div>  )
+<h1>{building.name} - {building.address}</h1>
+{/*Floor dropdown*/}
+<div>
+<label className="block text-sm font-medium text-gray-700 mb-1">
+      Floor
+    </label>
+    <select
+  value={selectedFloor ?? ''}
+  onChange={e => setSelectedFloor(e.target.value ? Number(e.target.value) : null)}
+>
+      <option value="">Select your floor</option>
+      {floors.map(floor => (
+        <option key={floor} value={floor}>Floor {floor}</option>
+      ))}
+    </select>
+</div>
+{/*Unit display*/}
+<div>         
+{visibleUnits.map(unit => {
+  const { colour, label } = getStatusDisplay(
+    unit.report?.residentStatus ?? null,
+    unit.report?.resourceRequests ?? []
+  )
+
+  return (
+    <Link
+      key={unit.id}
+      href={`/building/${building.id}/unit/${unit.id}`}
+      style={{ backgroundColor: colour }}
+    >
+      <p>Unit {unit.unitNumber}</p>
+      <p>{label}</p>
+      {unit.report && (
+        <p>{unit.report.occupantsEvacuated} of {unit.report.totalOccupants} out</p>
+      )}
+    </Link>
+  )
+})}
+</div>
+</div>  
+)
 }
