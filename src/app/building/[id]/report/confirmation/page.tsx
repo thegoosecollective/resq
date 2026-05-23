@@ -31,7 +31,8 @@ export default async function ConfirmationPage({
     <p>Your report has been updated</p>
     <h2>Unit {report.unit.unitNumber}</h2>   
     <button style={{ backgroundColor: colour, color: 'white' }} disabled>{label}</button>
-    <p>Last updated: {new Date(report.submittedAt).toLocaleString()}</p>
+    <p>Submitted at : {new Date(report.submittedAt).toLocaleString()}</p>
+    <p>Last updated: {new Date(report.updatedAt).toLocaleString()}</p>
 
    <p>Resource requests:</p>
    <ul>

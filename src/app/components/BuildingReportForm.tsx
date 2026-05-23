@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { submitReport } from '@/app/actions/reports'
 import { ResidentStatus } from '@prisma/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 
 type Unit = {
     id: number
@@ -211,50 +213,64 @@ const statusOptions = [
   You're submitting for a different unit than your original report. Your original report for Unit {existingReport?.unit.unitNumber} will remain in the system.
 </p>
 <p className="text-sm text-yellow-700">Continue?</p>
+<div className="flex gap-2 mt-3">
+  <button type="button" onClick={handleConfirmedSubmit}>Yes, continue</button>
+  <button type="button" onClick={() => setStaleWarning(null)}>Cancel</button>
+</div>
   </div>
 )}
 
           {/* floor dropdown */}
-
-          <div className={`floorDropdownContainer ${fieldErrors.floor ? 'border border-red-500 rounded-lg p-2' : ''}`}>
-          {fieldErrors.floor && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.floor}</p>
+          {existingReport ? (
+            <> 
+  <h2>Editing report for Unit {existingReport.unit.unitNumber} — Floor {existingReport.unit.floor}</h2>
+  <Link href={`/building/${building.id}/report`}>
+  Wrong unit? Click here
+</Link>
+</>
+) : (
+  <>
+  {/*floor dropdown*/}
+  <div className={`floorDropdownContainer ${fieldErrors.floor ? 'border border-red-500 rounded-lg p-2' : ''}`}>
+  {fieldErrors.floor && (
+<p className="text-red-500 text-sm mt-1">{fieldErrors.floor}</p>
 )}
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Floor
-            </label>
-            <select
-              value={selectedFloor ?? ''}
-              onChange={e => handleFloorChange(Number(e.target.value))}
-              className={`border ${fieldErrors.floor ? 'border-red-500' : 'border-gray-300'}`}>
-              <option value="">Select your floor</option>
-              {floors.map(floor => (
-                <option key={floor} value={floor}>Floor {floor}</option>
-              ))}
-            </select>
-          </div>
-      
-        {/* unit dropdown */}
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Floor
+    </label>
+    <select
+      value={selectedFloor ?? ''}
+      onChange={e => handleFloorChange(Number(e.target.value))}
+      className={`border ${fieldErrors.floor ? 'border-red-500' : 'border-gray-300'}`}>
+      <option value="">Select your floor</option>
+      {floors.map(floor => (
+        <option key={floor} value={floor}>Floor {floor}</option>
+      ))}
+    </select>
+  </div>
 
-        <div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : 'border border-gray-300 rounded-lg p-2'}>
-        {fieldErrors.unit && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.unit}</p>
+{/*unit dropdown*/}
+<div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : 'border border-gray-300 rounded-lg p-2'}>
+{fieldErrors.unit && (
+<p className="text-red-500 text-sm mt-1">{fieldErrors.unit}</p>
 )}
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Unit
-                </label>
-                <select
-                 disabled={!selectedFloor}
-                  value={selectedUnitId ?? ''}
-                  onChange={e => handleUnitIDChange(Number(e.target.value))}
-                   >
-                  <option value="">Select your unit</option>
-                  {floorUnits.map(unit =>  (
-                    <option key={unit.id} value={unit.id}>Unit {unit.unitNumber}</option>
-                  ))}
-                </select>
-              </div>
-          
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Unit
+        </label>
+        <select
+         disabled={!selectedFloor}
+          value={selectedUnitId ?? ''}
+          onChange={e => handleUnitIDChange(Number(e.target.value))}
+           >
+          <option value="">Select your unit</option>
+          {floorUnits.map(unit =>  (
+            <option key={unit.id} value={unit.id}>Unit {unit.unitNumber}</option>
+          ))}
+        </select>
+      </div>
+      </>
+  )}
+    
         {/* Occupant selection */}
 
         <div className={`occupantSelectionContainer ${fieldErrors.totalOccupants ? 'border border-red-500 rounded-lg p-2' : ''}`}>
