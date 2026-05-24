@@ -67,7 +67,8 @@ export default function DashboardView({
 
   return (
     <div>
-      <h1>{building.name} - {building.address}</h1>
+      <h1>{building.name}</h1>
+      <h3>{building.address}</h3>
       <p>{reportedCount}/{totalCount} units reporting</p>
       {isResponder && (
         <p>🔴 {emergencyCount} critical · 🟡 {assistanceCount} need assistance</p>

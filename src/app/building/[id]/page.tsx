@@ -32,8 +32,8 @@ export default async function BuildingPage({ params }: {
     <div className="min-h-screen flex flex-col items-center justify-center gap-8">
       
       <div className="text-center">
-        <h1>{building.name}</h1>
-        <h3 className="text-slate-500">{building.address}</h3>
+        <h1>Res-Q</h1>
+        <h3 className="text-slate-500">{building.name} - {building.address}</h3>
       </div>
      
       <div className="flex flex-col gap-6 w-full max-w-sm">

@@ -24,7 +24,6 @@ export default async function ReportPage({
   return (
     <div>
     <Link href={`/building/${building.id}`}>← Back</Link>
-      <h1>{building.name}: Reporting</h1>
       <BuildingReportForm
         building={building}
         units={building.units}
