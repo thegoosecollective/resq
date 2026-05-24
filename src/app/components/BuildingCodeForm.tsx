@@ -38,7 +38,6 @@ export default function BuildingCodeForm({
     <form onSubmit={handleSubmit}>
       
   
-      {/* input and button always together */}
       <div className="flex gap-2">
         <input 
           value={code}
@@ -46,11 +45,14 @@ export default function BuildingCodeForm({
           placeholder="Enter building code"
           className="border border-gray-500 rounded-lg p-3 flex-1"
         />
-<Button type="submit" disabled={isSubmitting} variant="primary">
-{isSubmitting ? 'Finding...' : 'Find Building'}
+<Button 
+  type="submit" 
+  disabled={isSubmitting} 
+  variant="primary" 
+>
+  {isSubmitting ? 'Finding...' : 'Find Building'}
 </Button>
       </div>
-        {/* error below the input+button row */}
         <div className="h-6 text-lg mt-2 mb-2">
         {error && <ErrorMessage message={error} />}
       </div>

@@ -6,7 +6,8 @@ import { ResidentStatus } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ErrorMessage from '@/app/components/ui/ErrorMessage'
-export const dynamic = 'force-dynamic'
+import Select from '@/app/components/ui/Select'
+import Button from '@/app/components/ui/Button'
 
 type Unit = {
     id: number
@@ -202,9 +203,8 @@ const statusOptions = [
         <div className="space-y-6">
       
           {/* error */}
-          {error && (
-            <p className="text-red-600 text-sm">{error}</p>
-          )}
+          <ErrorMessage message={error} />
+   
       
       {staleWarning && (
   <div className="border border-yellow-400 bg-yellow-50 rounded-lg p-4">
@@ -215,9 +215,8 @@ const statusOptions = [
 </p>
 <p className="text-sm text-yellow-700">Continue?</p>
 <div className="flex gap-2 mt-3">
-  <button type="button" onClick={handleConfirmedSubmit}>Yes, continue</button>
-  <button type="button" onClick={() => setStaleWarning(null)}>Cancel</button>
-</div>
+<Button type="button" onClick={handleConfirmedSubmit} variant="primary">Yes, continue</Button>
+<Button type="button" onClick={() => setStaleWarning(null)} variant="outline">Cancel</Button></div>
   </div>
 )}
 
@@ -239,15 +238,12 @@ const statusOptions = [
     <label className="block text-sm font-medium text-gray-700 mb-1">
       Floor
     </label>
-    <select
-      value={selectedFloor ?? ''}
-      onChange={e => handleFloorChange(Number(e.target.value))}
-      className={`border ${fieldErrors.floor ? 'border-red-500' : 'border-gray-300'}`}>
-      <option value="">Select your floor</option>
-      {floors.map(floor => (
-        <option key={floor} value={floor}>Floor {floor}</option>
-      ))}
-    </select>
+    <Select
+  value={selectedFloor ?? ''}
+  onChange={e => handleFloorChange(Number(e.target.value))}
+  placeholder="Select your floor"
+  options={floors.map(f => ({ value: f, label: `Floor ${f}` }))}
+/>
   </div>
 
 {/*unit dropdown*/}
@@ -257,16 +253,16 @@ const statusOptions = [
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Unit
         </label>
-        <select
-         disabled={!selectedFloor}
-          value={selectedUnitId ?? ''}
-          onChange={e => handleUnitIDChange(Number(e.target.value))}
-           >
-          <option value="">Select your unit</option>
-          {floorUnits.map(unit =>  (
-            <option key={unit.id} value={unit.id}>Unit {unit.unitNumber}</option>
-          ))}
-        </select>
+        <Select
+  value={selectedUnitId ?? ''}
+  onChange={e => handleUnitIDChange(Number(e.target.value))}
+  disabled={!selectedFloor}
+  placeholder="Select your unit"
+  options={floorUnits.map(unit => ({ 
+    value: unit.id, 
+    label: `Unit ${unit.unitNumber}` 
+  }))}
+/>
       </div>
       </>
   )}
@@ -277,15 +273,16 @@ const statusOptions = [
         {fieldErrors.totalOccupants && (
  <ErrorMessage message={fieldErrors.totalOccupants} />)}
           <p>How many people are/were in your unit?</p>
-          <select
-          disabled={!selectedUnitId}
-          onChange={e => handleTotalOccupantsChange(Number(e.target.value))}          value={totalOccupants ?? ''}
-          >
-            <option value="">Total occupants</option>
-              {occupantOptions.map(occupant => (
-                <option key={occupant} value={occupant}>{occupant}</option>
-              ))}
-          </select>
+          <Select
+  value={totalOccupants ?? ''}
+  onChange={e => handleTotalOccupantsChange(Number(e.target.value))}
+  disabled={!selectedUnitId}
+  placeholder="Total occupants"
+  options={occupantOptions.map(o => ({ 
+    value: o, 
+    label: `${o}` 
+  }))}
+/>
           </div>
 
 
@@ -296,18 +293,17 @@ const statusOptions = [
   {fieldErrors.evacuated && (
  <ErrorMessage message={fieldErrors.evacuated} />)}
     <p>How many have already made it out?</p>
-    <select
-      disabled={!totalOccupants}
-      onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
-      value={occupantsEvacuated ?? ''}
-      >
-<option value="">Select</option>
-
-      <option value={0}>0 — nobody out yet</option>
-      {occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(occupant => (
-        <option key={occupant} value={occupant}>{occupant}</option>
-      ))}
-    </select>
+    <Select
+  value={occupantsEvacuated ?? ''}
+  onChange={e => handleOccupantsEvacuatedChange(Number(e.target.value))}
+  disabled={!totalOccupants}
+  placeholder="Select"
+  prefixOptions={[{ value: 0, label: '0 — nobody out yet' }]}
+  options={occupantOptions.filter(n => n <= (totalOccupants ?? 15)).map(o => ({
+    value: o,
+    label: `${o}`
+  }))}
+/>
   </div>
 
 
@@ -401,12 +397,13 @@ onChange={e => setNotes(e.target.value)}
      
 
      <div>
-     <button
-  type="button"  
+     <Button
+  type="button"
   onClick={handleSubmit}
->
+  disabled={isSubmitting}
+  variant="primary">
   {isSubmitting ? 'Submitting...' : 'Submit Report'}
-</button>
+</Button>
 
      </div>
      </div>
