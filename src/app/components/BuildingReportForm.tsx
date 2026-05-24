@@ -186,9 +186,9 @@ export default function BuildingReportForm({
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Editing report</p>
             <p className="font-bold text-slate-900 text-lg">Unit {existingReport.unit.unitNumber} · Floor {existingReport.unit.floor}</p>
           </div>
-          <Link href={`/building/${building.id}/report`} className="text-sm text-blue-600 underline underline-offset-2">
-            Wrong unit?
-          </Link>
+          <Link href={`/building/${building.id}/report`} className="text-sm font-bold text-blue-600 underline underline-offset-2">
+  Wrong unit?
+</Link>
         </div>
       ) : (
         /* Floor + Unit dropdowns */
@@ -255,7 +255,7 @@ export default function BuildingReportForm({
             : 'Status refers to people only. Use resource requests for pet evacuation.'}
         </p>
         {fieldErrors.status && <ErrorMessage message={fieldErrors.status} />}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {statusOptions.filter(option => {
             if (option.value === 'evacuated' && totalOccupants !== null && occupantsEvacuated !== totalOccupants) return false
             if ((option.value === 'assistance' || option.value === 'emergency') && totalOccupants !== null && occupantsEvacuated === totalOccupants) return false
