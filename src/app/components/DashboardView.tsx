@@ -114,9 +114,9 @@ export default function DashboardView({
         style={{ backgroundColor: colour }}
       >
         <p>{unit.unitNumber}</p>
-        {unit.report && (
-          <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
-        )}
+        {unit.report && unit.report.totalOccupants > 0 && (
+  <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
+)}
       </Link>
     ) : (
       <div key={unit.id} style={{ backgroundColor: colour }}>
