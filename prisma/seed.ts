@@ -24,12 +24,12 @@ const ASSISTANCE_NOTES = [
 ]
 
 const EMERGENCY_NOTES = [
-  'Resident collapsed. Unresponsive. CPR may be needed.',
-  'Smoke visible inside unit. Door is hot. DO NOT OPEN.',
-  'Resident trapped under fallen furniture. Conscious but unable to move.',
-  'Elderly resident with dementia. Confused and refusing to leave.',
-  'Resident having severe allergic reaction. EpiPen used. Still deteriorating.',
-]
+    'My roommate has collapsed and is unresponsive. I think she needs CPR. I am in the hallway.',
+    'Smoke is coming under the door. Door handle is hot. We cannot get out.',
+    'My husband fell and is trapped under the bookshelf. He is conscious but cannot move.',
+    'My mother has dementia and is refusing to leave. I cannot carry her alone.',
+    'Severe allergic reaction. Used EpiPen but still getting worse. Need ambulance immediately.',
+  ]
 
 function randomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
