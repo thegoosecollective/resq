@@ -1,3 +1,13 @@
+/**
+ * components/DashboardView.tsx — Building Dashboard Grid
+ *
+ * Client component displaying a colour-coded grid of all units in a building.
+ * Role-aware — responders see operational overlays (in progress, deceased) and
+ * status/floor filters. Family members see resident status only with floor filter.
+ *
+ * All filtering is client-side — no additional DB calls after initial page load.
+ */
+
 "use client";
 import { useState } from "react";
 import { getStatusDisplay } from "@/lib/reportUtils";
@@ -44,12 +54,10 @@ export default function DashboardView({
   units: Unit[];
   isResponder: boolean;
 }) {
+  // Client-side filtering — all units loaded once on page load
+  // Floor/status filtering happens in memory with no additional DB calls
+  // Suitable for buildings under 500 units
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  // Client-side filtering. All loaded once on page load
-  // Floor/status filtering happens in memory with no
-  // additional DB calls
-  //Suitable for buildings under 500
-
   const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
   const reportedCount = units.filter((u) => u.report !== null).length;
   const totalCount = units.length;
@@ -164,40 +172,49 @@ export default function DashboardView({
         </div>
 
         {/* Legend */}
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
-          Colour legend
-        </p>
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-bold pointer-events-none select-none">
-          {[
-            { colour: "#16A34A", label: "Evacuated", textColour: "#fff" },
-            {
-              colour: "#F59E0B",
-              label: "Needs assistance",
-              textColour: "#1C1917",
-            },
-            { colour: "#DC2626", label: "Critical", textColour: "#fff" },
-            { colour: "#2563EB", label: "Pet rescue", textColour: "#fff" },
-            ...(isResponder
-              ? [
-                  {
-                    colour: "#EA580C",
-                    label: "In progress",
-                    textColour: "#fff",
-                  },
-                  { colour: "#374151", label: "Deceased", textColour: "#fff" },
-                ]
-              : []),
-            { colour: "#CBD5E1", label: "No report", textColour: "#1E293B" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              role="listitem"
-              className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-bold"
-              style={{ backgroundColor: item.colour, color: item.textColour }}
-            >
-              {item.label}
-            </div>
-          ))}
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+            Colour legend
+          </p>
+          <div
+            className="flex flex-wrap gap-2 pointer-events-none select-none"
+            role="list"
+          >
+            {[
+              { colour: "#16A34A", label: "Evacuated", textColour: "#fff" },
+              {
+                colour: "#F59E0B",
+                label: "Needs assistance",
+                textColour: "#1C1917",
+              },
+              { colour: "#DC2626", label: "Critical", textColour: "#fff" },
+              { colour: "#2563EB", label: "Pet rescue", textColour: "#fff" },
+              ...(isResponder
+                ? [
+                    {
+                      colour: "#EA580C",
+                      label: "In progress",
+                      textColour: "#fff",
+                    },
+                    {
+                      colour: "#374151",
+                      label: "Deceased",
+                      textColour: "#fff",
+                    },
+                  ]
+                : []),
+              { colour: "#CBD5E1", label: "No report", textColour: "#1E293B" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                role="listitem"
+                className="px-2 py-1 rounded-md text-xs font-bold"
+                style={{ backgroundColor: item.colour, color: item.textColour }}
+              >
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Unit grid */}

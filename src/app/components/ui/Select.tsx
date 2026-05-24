@@ -1,40 +1,51 @@
+/**
+ * components/ui/Select.tsx — Reusable Select Dropdown Component
+ *
+ * Accessible styled select with support for a placeholder, disabled state,
+ * and optional prefixOptions for hardcoded entries before the mapped list
+ * (e.g. "0 — none yet" before a numeric range).
+ */
+
 type Option = {
-    value: string | number
-    label: string
-  }
-  
-  type SelectProps = {
-    value: string | number
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
-    options: Option[]
-    placeholder?: string
-    disabled?: boolean
-    prefixOptions?: Option[]  
-  }
-  
-  export default function Select({
-    value,
-    onChange,
-    options,
-    placeholder = 'Select...',
-    disabled = false,
-    prefixOptions
-  }: SelectProps) {
-    return (
-      <select
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="focus:outline-none focus:ring-2 focus:ring-blue-500
-         w-full border border-gray-200 rounded-lg p-3 bg-white text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-      >
-       <option value="">{placeholder}</option>
-{prefixOptions?.map(opt => (
-  <option key={opt.value} value={opt.value}>{opt.label}</option>
-))}
-{options.map(opt => (
-  <option key={opt.value} value={opt.value}>{opt.label}</option>
-))}
-      </select>
-    )
-  }
+  value: string | number;
+  label: string;
+};
+
+type SelectProps = {
+  value: string | number;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: Option[];
+  placeholder?: string;
+  disabled?: boolean;
+  prefixOptions?: Option[];
+};
+
+export default function Select({
+  value,
+  onChange,
+  options,
+  placeholder = "Select...",
+  disabled = false,
+  prefixOptions,
+}: SelectProps) {
+  return (
+    <select
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className="w-full border border-gray-200 rounded-lg p-3 bg-white text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+    >
+      <option value="">{placeholder}</option>
+      {prefixOptions?.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  );
+}

@@ -1,3 +1,13 @@
+/**
+ * report/confirmation/page.tsx — Report Confirmation Page
+ *
+ * Displays a summary of the resident's submitted report including status,
+ * occupant counts, resource requests, and any responder updates.
+ * 
+ * Always renders from the resident/family perspective (isResponder: false)
+ * Deceased status is masked, responder operational details are hidden.
+ */
+
 import { notFound } from 'next/navigation'
 import { getReportByUnitID } from '@/app/actions/reports'
 import { getStatusDisplay, getResponderStatusDisplay, getResourceLabel } from '@/lib/reportUtils'
@@ -22,7 +32,7 @@ export default async function ConfirmationPage({
     report.residentStatus,
     report.resourceRequests,
     report.responderStatus,
-    false 
+    false // always family/resident view — masks deceased
   )
 
   return (
@@ -36,8 +46,8 @@ export default async function ConfirmationPage({
             Unit {report.unit.unitNumber} · Floor {report.unit.floor}
           </h1>
           <p className="text-sm font-medium text-slate-500">
-  {report.unit.building.name} · {report.unit.building.address}
-</p>
+            {report.unit.building.name} · {report.unit.building.address}
+          </p>
         </div>
 
         {/* Status badge */}
@@ -60,75 +70,76 @@ export default async function ConfirmationPage({
           </div>
         )}
 
-      
-{/* Report details card */}
-<div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
-  <dl>
+        {/* Report details card */}
+        <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+          <dl>
 
-    {/* Submitted */}
-    <div className="px-5 py-4 flex justify-between">
-    <dt className="text-base font-bold text-slate-500">Submitted</dt>
-    <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
-        {new Date(report.submittedAt).toLocaleString()}
-      </dd>
-    </div>
+            {/* Submitted */}
+            <div className="px-5 py-4 flex justify-between">
+              <dt className="text-base font-bold text-slate-500">Submitted</dt>
+              <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
+                {new Date(report.submittedAt).toLocaleString()}
+              </dd>
+            </div>
 
-    {/* Last updated */}
-    <div className="px-5 py-4 flex justify-between">
-    <dt className="text-base font-bold text-slate-500">Last updated</dt>
-    <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
-        {new Date(report.updatedAt).toLocaleString()}
-      </dd>
-    </div>
+            {/* Last updated */}
+            <div className="px-5 py-4 flex justify-between">
+              <dt className="text-base font-bold text-slate-500">Last updated</dt>
+              <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
+                {new Date(report.updatedAt).toLocaleString()}
+              </dd>
+            </div>
 
-    {/* Occupants */}
-    {report.totalOccupants > 0 && (
-      <div className="px-5 py-4 flex justify-between">
-        <dt className="text-base font-bold text-slate-500">Evacuated</dt>
-        <dd className="text-base font-medium text-slate-900">
-          {report.occupantsEvacuated}/{report.totalOccupants}
-        </dd>
-      </div>
-    )}
+            {/* Occupants */}
+            {report.totalOccupants > 0 && (
+              <div className="px-5 py-4 flex justify-between">
+                <dt className="text-base font-bold text-slate-500">Evacuated</dt>
+                <dd className="text-base font-medium text-slate-900">
+                  {report.occupantsEvacuated}/{report.totalOccupants}
+                </dd>
+              </div>
+            )}
 
-  </dl>
+            {/* Resource requests */}
+            <div className="px-5 py-4">
+              <dt className="text-base font-bold text-slate-500 mb-2">Resource requests</dt>
+              <dd>
+                {report.resourceRequests.length > 0 ? (
+                  <ul aria-label="Resource requests" className="space-y-1">
+                    {report.resourceRequests.map(r => (
+                      <li key={r} className="text-base font-medium text-slate-900">
+                        {getResourceLabel(r)}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-base font-medium text-slate-400">None</p>
+                )}
+              </dd>
+            </div>
 
-  <div className="px-5 py-4">
-  <p className="text-base font-bold text-slate-500 mb-2">Resource requests</p>
-  {report.resourceRequests.length > 0 ? (
-    <ul aria-label="Resource requests" className="space-y-1">
-      {report.resourceRequests.map(r => (
-        <li key={r} className="text-base font-medium text-slate-900">
-          {getResourceLabel(r)}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p className="text-base font-medium text-slate-400">None</p>
-  )}
-</div>
+            {/* Notes */}
+            {report.notes && (
+              <div className="px-5 py-4">
+                <dt className="text-base font-bold text-slate-500 mb-1">Notes</dt>
+                <dd className="text-base font-medium text-slate-900">{report.notes}</dd>
+              </div>
+            )}
 
-  {/* Notes */}
-  {report.notes && (
-    <div className="px-5 py-4">
-      <p className="text-sm font-bold text-slate-500 mb-1">Notes</p>
-      <p className="text-sm font-medium text-slate-900">{report.notes}</p>
-    </div>
-  )}
-
-</div>
+          </dl>
+        </div>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
-          aria-label="Edit your safety report"
+            aria-label="Edit your safety report"
             href={`/building/${id}/report?unitId=${report.unitId}`}
             className="flex-1 block text-center px-6 py-3 bg-blue-600 text-white font-bold rounded-lg border-2 border-blue-600 hover:bg-transparent hover:text-blue-600 transition-colors"
           >
             Edit report
           </Link>
           <Link
-          aria-label="Report was submitted for wrong unit"
+            aria-label="Report was submitted for wrong unit"
             href={`/building/${id}/report`}
             className="flex-1 block text-center px-6 py-3 bg-transparent text-slate-700 font-bold rounded-lg border-2 border-slate-300 hover:border-slate-500 transition-colors"
           >

@@ -1,3 +1,20 @@
+/**
+ * lib/reportUtils.ts — Display Utility Functions
+ *
+ * Pure logic functions for converting raw DB values into human-readable
+ * UI output. No database calls.
+ *
+ * Safe to use in both server and client components.
+ * Single source of truth for status colours, labels, and masking logic.
+ *
+ * Functions:
+ * - getStatusDisplay(...)         Returns colour, label and text colour based on resident
+ *                                 and responder status. Responder status overrides resident.
+ *                                 Deceased is masked as "Help is on the way" for family.
+ * - getResourceLabel(value)       Maps DB resource request values to human-readable labels
+ * - getResponderStatusDisplay(...) Returns responder status label, masking deceased for family
+ */
+
 // Centralized display logic for status colours
 // Used in dashboard, confirmation page and unit
 // detail view for all roles
@@ -34,13 +51,6 @@ export function getStatusDisplay(
           ? "Critical — Help is on the way"
           : "Help is on the way";
       return { colour: "#EA580C", label, textColour: "#ffffff" };
-    }
-    if (responderStatus === "in_progress" && !isResponder) {
-      return {
-        colour: "#EA580C",
-        label: "Help is on the way",
-        textColour: "#ffffff",
-      };
     }
     if (responderStatus === "deceased" && isResponder) {
       return { colour: "#374151", label: "Deceased", textColour: "#ffffff" };

@@ -1,3 +1,13 @@
+/**
+ * dashboard/page.tsx — Building Dashboard Page
+ *
+ * Server component that fetches all units and reports for a building,
+ * then passes them to DashboardView. 
+ * 
+ * Role is determined by the ?responder=true
+ * query parameter set after successful access code entry on the responder portal.
+ */
+
 import DashboardView from "@/app/components/DashboardView";
 import { getBuildingReports } from "@/app/actions/buildings";
 import { notFound } from "next/navigation";

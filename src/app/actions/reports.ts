@@ -1,3 +1,14 @@
+/**
+ * reports.ts — Server Actions: Report Management
+ *
+ * Handles all database operations for resident submissions and responder updates.
+ *
+ * Functions:
+ * - submitReport(...)           Upserts a resident safety report — creates on first submission, updates on resubmit
+ * - getReportByUnitID(id)       Fetches a single report with unit and building details
+ * - updateResponderStatus(...)  Updates responder attendance status; syncs occupant count when confirmed evacuated
+ */
+
 "use server";
 
 import { prisma } from "@/lib/prisma";

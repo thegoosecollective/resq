@@ -1,3 +1,19 @@
+/**
+ * components/BuildingReportForm.tsx — Resident Safety Report Form
+ *
+ * Core form for residents to submit or edit their safety status during an emergency.
+ * Uses progressive disclosure — fields enable sequentially as previous steps are completed,
+ * reducing cognitive load in high-stress situations.
+ *
+ * Features:
+ * - Floor/unit selection with client-side filtering (no extra DB calls)
+ * - Occupant count tracking with validation (evacuated cannot exceed total)
+ * - Dynamic status buttons — options shown/hidden based on occupant counts
+ * - Pet rescue handled separately from people status via resource requests
+ * - Pre-populates from existingReport prop when editing a previous submission
+ * - Stale warning when user attempts to submit for a different unit than original
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -154,6 +170,8 @@ export default function BuildingReportForm({
     setFieldErrors((prev) => ({ ...prev, resources: "" }));
   }
 
+  // Upsert: create new report or update existing
+  // Resident may submit multiple times during evolving emergency
   async function performSubmit() {
     setFieldErrors({});
     setIsSubmitting(true);
@@ -181,8 +199,6 @@ export default function BuildingReportForm({
     await performSubmit();
   }
 
-  // Upsert: create new report or update existing
-  // Resident may submit multiple times during evolving emergency
   async function handleSubmit() {
     const errors: Record<string, string> = {};
     if (!selectedFloor) errors.floor = "Please select a floor";
