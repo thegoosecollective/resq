@@ -5,6 +5,7 @@ import { submitReport } from '@/app/actions/reports'
 import { ResidentStatus } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ErrorMessage from '@/app/components/ui/ErrorMessage'
 export const dynamic = 'force-dynamic'
 
 type Unit = {
@@ -233,7 +234,7 @@ const statusOptions = [
   {/*floor dropdown*/}
   <div className={`floorDropdownContainer ${fieldErrors.floor ? 'border border-red-500 rounded-lg p-2' : ''}`}>
   {fieldErrors.floor && (
-<p className="text-red-500 text-sm mt-1">{fieldErrors.floor}</p>
+    <ErrorMessage message={fieldErrors.floor} />
 )}
     <label className="block text-sm font-medium text-gray-700 mb-1">
       Floor
@@ -252,8 +253,7 @@ const statusOptions = [
 {/*unit dropdown*/}
 <div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : 'border border-gray-300 rounded-lg p-2'}>
 {fieldErrors.unit && (
-<p className="text-red-500 text-sm mt-1">{fieldErrors.unit}</p>
-)}
+ <ErrorMessage message={fieldErrors.unit} />)}
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Unit
         </label>
@@ -275,8 +275,7 @@ const statusOptions = [
 
         <div className={`occupantSelectionContainer ${fieldErrors.totalOccupants ? 'border border-red-500 rounded-lg p-2' : ''}`}>
         {fieldErrors.totalOccupants && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.totalOccupants}</p>
-)}
+ <ErrorMessage message={fieldErrors.totalOccupants} />)}
           <p>How many people are/were in your unit?</p>
           <select
           disabled={!selectedUnitId}
@@ -295,8 +294,7 @@ const statusOptions = [
     <div className={`evacuateSelectionContainer ${fieldErrors.evacuated ? 'border border-red-500 rounded-lg p-2' : ''}`}>
     
   {fieldErrors.evacuated && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.evacuated}</p>
-)}
+ <ErrorMessage message={fieldErrors.evacuated} />)}
     <p>How many have already made it out?</p>
     <select
       disabled={!totalOccupants}
@@ -319,8 +317,7 @@ const statusOptions = [
  
             <div className={`statusButtonContainer ${fieldErrors.status ? 'border border-red-500 rounded-lg p-2' : ''}`}>
             {fieldErrors.status && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.status}</p>
-)}
+ <ErrorMessage message={fieldErrors.status} />)}
 <p className="text-sm text-gray-500">
   {totalOccupants !== null && occupantsEvacuated === totalOccupants
     ? 'All occupants accounted for. Use resource requests for pet evacuation.'
@@ -366,8 +363,7 @@ Please select honestly as accurate status helps responders reach those who need 
                <div className={`resourceRequestsContainer ${fieldErrors.resources ? 'border border-red-500 rounded-lg p-2' : ''}`}>
               
                {fieldErrors.resources && (
-  <p className="text-red-500 text-sm mt-1">{fieldErrors.resources}</p>
-)}
+ <ErrorMessage message={fieldErrors.resources} />)}
                <p>Resource requests</p>
                {availableResources.map(option =>  (
                 <label key={option.value} className="flex items-center gap-2">

@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { lookupBuilding } from '@/app/actions/buildings'
+import Button from '@/app/components/ui/Button'
+import ErrorMessage from '@/app/components/ui/ErrorMessage'
 
 export default function BuildingCodeForm({ 
   redirectTo = 'public' 
@@ -34,15 +36,24 @@ export default function BuildingCodeForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="Enter building code"
-      />
-      {error && <p>{error}</p>}
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Finding building...' : 'Find Building'}
-      </button>
+      
+  
+      {/* input and button always together */}
+      <div className="flex gap-2">
+        <input 
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Enter building code"
+          className="border border-gray-500 rounded-lg p-3 flex-1"
+        />
+<Button type="submit" disabled={isSubmitting} variant="primary">
+{isSubmitting ? 'Finding...' : 'Find Building'}
+</Button>
+      </div>
+        {/* error below the input+button row */}
+        <div className="h-6 text-lg mt-2 mb-2">
+        {error && <ErrorMessage message={error} />}
+      </div>
     </form>
   )
 }
