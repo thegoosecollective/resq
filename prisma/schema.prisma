@@ -34,7 +34,6 @@ model Unit {
   building               Building @relation(fields: [buildingId], references: [id])
   floor                  Int
   unitNumber             String
-  emergencyContactEmail  String?
   report                 Report?
   createdAt              DateTime @default(now())
 
