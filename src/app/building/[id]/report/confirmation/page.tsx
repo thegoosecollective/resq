@@ -20,7 +20,9 @@ export default async function ConfirmationPage({
 
   const { colour, label, textColour } = getStatusDisplay(
     report.residentStatus,
-    report.resourceRequests
+    report.resourceRequests,
+    report.responderStatus,
+    false 
   )
 
   return (

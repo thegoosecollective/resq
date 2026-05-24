@@ -5,23 +5,42 @@ export function getStatusDisplay(
   isResponder?: boolean
 ): { colour: string; label: string; textColour: string } {
 
-   // no report yet — check before anything else
-   if (!residentStatus) {
+  // no report yet
+  if (!residentStatus) {
     return { colour: '#CBD5E1', label: 'No report yet', textColour: '#1E293B' }
   }
 
-   // responder overrides
-   if (isResponder && responderStatus) {
-    if (responderStatus === 'in_progress') return { colour: '#F97316', label: '🚒 In progress', textColour: '#ffffff' }
-    if (responderStatus === 'evacuated') return { colour: '#16A34A', label: '✅ Resolved', textColour: '#ffffff' }
-    if (responderStatus === 'deceased') return { colour: '#374151', label: 'Deceased', textColour: '#ffffff' }
+  // responder overrides
+  if (responderStatus) {
+    if (responderStatus === 'evacuated') {
+      return { colour: '#16A34A', label: 'Confirmed evacuated', textColour: '#ffffff' }
+    }
+    if (responderStatus === 'in_progress' && isResponder) {
+      const label = residentStatus === 'emergency' ? 'Critical — In progress' : 'In progress'
+      return { colour: '#EA580C', label, textColour: '#ffffff' }
+    }
+    if (responderStatus === 'in_progress' && !isResponder) {
+      const label = residentStatus === 'emergency' ? 'Critical — Help is on the way' : 'Help is on the way'
+      return { colour: '#EA580C', label, textColour: '#ffffff' }
+    }
+    if (responderStatus === 'in_progress' && !isResponder) {
+      return { colour: '#EA580C', label: 'Help is on the way', textColour: '#ffffff' }
+    }
+    if (responderStatus === 'deceased' && isResponder) {
+      return { colour: '#374151', label: 'Deceased', textColour: '#ffffff' }
+    }
+    if (responderStatus === 'deceased' && !isResponder) {
+      const label = residentStatus === 'emergency' ? 'Critical — Help is on the way' : 'Help is on the way'
+      return { colour: '#EA580C', label, textColour: '#ffffff' }
+    }
   }
 
+  // resident status
   if (residentStatus === 'evacuated' && resourceRequests.includes('pet')) {
     return { colour: '#2563EB', label: 'Evacuated — Pet rescue required', textColour: '#ffffff' }
   }
   if (residentStatus === 'evacuated') return { colour: '#16A34A', label: 'Evacuated', textColour: '#ffffff' }
-  if (residentStatus === 'assistance') return { colour: '#F59E0B', label: 'Needs assistance', textColour: '#1C1917' }  // amber stays, dark text
+  if (residentStatus === 'assistance') return { colour: '#F59E0B', label: 'Needs assistance', textColour: '#1C1917' }
   return { colour: '#DC2626', label: 'Critical', textColour: '#ffffff' }
 }
 

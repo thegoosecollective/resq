@@ -6,9 +6,9 @@ import { updateResponderStatus } from '@/app/actions/reports'
 import { useRouter } from 'next/navigation'
 
 const responderStatusOptions = [
-  { value: 'evacuated', label: '✅ All evacuated', style: 'border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700' },
-  { value: 'in_progress', label: '🚒 In progress', style: 'border-amber-500 bg-amber-500 text-slate-900 hover:bg-amber-600' },
-  { value: 'deceased', label: '🖤 Deceased', style: 'border-slate-700 bg-slate-700 text-white hover:bg-slate-800' },
+  { value: 'evacuated', label: 'All evacuated', style: 'border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700' },
+  { value: 'in_progress', label: 'In progress', style: 'border-amber-500 bg-amber-500 text-slate-900 hover:bg-amber-600' },
+  { value: 'deceased', label: 'Deceased', style: 'border-slate-700 bg-slate-700 text-white hover:bg-slate-800' },
 ]
 
 type Report = {
@@ -99,7 +99,9 @@ export default function UnitDetailView({
 
   const { colour, label, textColour } = getStatusDisplay(
     report.residentStatus,
-    report.resourceRequests
+    report.resourceRequests,
+    report.responderStatus,
+    isResponder 
   )
 
   return (

@@ -63,18 +63,19 @@ export async function updateResponderStatus({
   responderStatus: ResponderStatus
 }) {
   try {
-    const report = await prisma.report.upsert({
+    const data: any = { responderStatus }
+    if (responderStatus === 'evacuated') {
+      const existing = await prisma.report.findUnique({ where: { unitId } })
+      if (existing) {
+        data.occupantsEvacuated = existing.totalOccupants
+      }
+    }
+
+    const updated = await prisma.report.update({
       where: { unitId },
-      update: { responderStatus },
-      create: {
-        unitId,
-        responderStatus,
-        totalOccupants: 0,
-        occupantsEvacuated: 0,
-        resourceRequests: [],
-      },
+      data,
     })
-    return { success: true, report }
+    return { success: true, report: updated }
   } catch (error) {
     console.error('FULL ERROR:', JSON.stringify(error, null, 2))
     return { success: false, error: 'Failed to update status.' }
