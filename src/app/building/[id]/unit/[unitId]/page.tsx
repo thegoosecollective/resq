@@ -25,7 +25,7 @@ export default async function UnitReportPage({
 
  return (
   <div>
-    <Link href={backHref} className="text-sm font-bold text-blue-600 underline underline-offset-2">
+    <Link href={backHref} className="underline font-bold text-lg">
       ← Back to dashboard
     </Link>
     <UnitDetailView

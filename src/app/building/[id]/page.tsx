@@ -36,36 +36,36 @@ export default async function BuildingPage({ params }: {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 gap-10">
-
-      {/* Header */}
-      <div className="text-center space-y-1">
-        <h1>Res-Q</h1>
-        <p className="font-bold text-slate-800 text-lg">{building.name}</p>
-        <p className="text-sm font-medium text-slate-500">{building.address}</p>
-      </div>
-
-      {/* Divider */}
-      <div className="w-full max-w-sm border-t border-slate-200" />
-
-      {/* Role selection */}
-      <div className="w-full max-w-sm space-y-4">
-        <p className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest">
-          Who are you?
-        </p>
-
-        {roleOptions.map(option => (
-          <div key={option.label} className="space-y-2">  {/* was space-y-1 */}
-          <Link href={option.href(id)} className={option.className}>
-            {option.icon} {option.label}
-          </Link>
-          <p className="text-xs font-medium text-slate-500 text-center">
-            {option.description}
-          </p>
+    <div>
+      <Link href="/" className="underline font-bold text-lg">← Back</Link>
+      
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 gap-10">
+        
+        <div className="text-center space-y-1">
+          <h1>Res-Q</h1>
+          <p className="font-bold text-slate-800 text-lg">{building.name}</p>
+          <p className="text-sm font-medium text-slate-500">{building.address}</p>
         </div>
-        ))}
+  
+        <div className="w-full max-w-sm border-t border-slate-200" />
+  
+        <div className="w-full max-w-sm space-y-4">
+          <p className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest">
+            Who are you?
+          </p>
+          {roleOptions.map(option => (
+            <div key={option.label} className="space-y-2">
+              <Link href={option.href(id)} className={option.className}>
+                {option.icon} {option.label}
+              </Link>
+              <p className="text-xs font-medium text-slate-500 text-center">
+                {option.description}
+              </p>
+            </div>
+          ))}
+        </div>
+  
       </div>
-
     </div>
   )
 }

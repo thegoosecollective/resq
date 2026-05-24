@@ -25,7 +25,8 @@ type Option = {
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className="w-full border border-gray-200 rounded-lg p-3 bg-white text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+        className="focus:outline-none focus:ring-2 focus:ring-blue-500
+         w-full border border-gray-200 rounded-lg p-3 bg-white text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
       >
        <option value="">{placeholder}</option>
 {prefixOptions?.map(opt => (

@@ -1,6 +1,8 @@
 import DashboardView from '@/app/components/DashboardView'
 import { getBuildingReports } from '@/app/actions/buildings'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
+
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage({
@@ -18,6 +20,9 @@ export default async function DashboardPage({
 
   return (
     <div>
+<Link href={`/building/${id}`} className="underline font-bold text-lg">
+  ← Back
+</Link>
       <DashboardView
   building={building}
   units={building.units}

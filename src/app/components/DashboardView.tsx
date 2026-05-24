@@ -5,12 +5,13 @@ import Link from 'next/link'
 import Select from '@/app/components/ui/Select'
 
 type Report = {
-  residentStatus: string
+  residentStatus: string | null  
   responderStatus: string | null 
   resourceRequests: string[]
   totalOccupants: number
   occupantsEvacuated: number
 }
+
   
 type Unit = {
   id: number

@@ -23,7 +23,7 @@ export default async function ReportPage({
 
   return (
     <div>
-    <Link href={`/building/${building.id}`}>← Back</Link>
+    <Link className="underline font-bold text-lg" href={`/building/${building.id}`}>← Back</Link>
       <BuildingReportForm
         building={building}
         units={building.units}

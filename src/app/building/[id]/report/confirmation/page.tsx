@@ -91,19 +91,20 @@ export default async function ConfirmationPage({
 
   </dl>
 
-  {/* Resource requests */}
-  {report.resourceRequests.length > 0 && (
-    <div className="px-5 py-4">
-      <p className="text-sm font-bold text-slate-500 mb-2">Resource requests</p>
-      <ul aria-label="Resource requests" className="space-y-1">
-        {report.resourceRequests.map(r => (
-          <li key={r} className="text-base font-medium text-slate-900">
-            {getResourceLabel(r)}
-          </li>
-        ))}
-      </ul>
-    </div>
+  <div className="px-5 py-4">
+  <p className="text-base font-bold text-slate-500 mb-2">Resource requests</p>
+  {report.resourceRequests.length > 0 ? (
+    <ul aria-label="Resource requests" className="space-y-1">
+      {report.resourceRequests.map(r => (
+        <li key={r} className="text-base font-medium text-slate-900">
+          {getResourceLabel(r)}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="text-base font-medium text-slate-400">None</p>
   )}
+</div>
 
   {/* Notes */}
   {report.notes && (
