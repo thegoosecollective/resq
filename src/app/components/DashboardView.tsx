@@ -59,9 +59,6 @@ export default function DashboardView({
 <div>
 <h1>{building.name} - {building.address}</h1>
 <p>{reportedCount}/{totalCount} units reporting</p>
-{isResponder && (
-  <p>🔴 {emergencyCount} critical · 🟡 {assistanceCount} need assistance</p>
-)}
 {/*Floor dropdown*/}
 <div>
 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -99,31 +96,37 @@ export default function DashboardView({
 )}
 <div>         
 {visibleUnits.map(unit => {
- const { colour, label } = getStatusDisplay(
-  unit.report?.residentStatus ?? null,
-  unit.report?.resourceRequests ?? [],
-  unit.report?.responderStatus ?? null,
-  isResponder
-)
+  const { colour, label } = getStatusDisplay(
+    unit.report?.residentStatus ?? null,
+    unit.report?.resourceRequests ?? [],
+    unit.report?.responderStatus ?? null,
+    isResponder
+  )
 
   return (
-    <Link
-      key={unit.id}
-      href={isResponder 
-        ? `/building/${building.id}/unit/${unit.id}?responder=true`
-        : `/building/${building.id}/unit/${unit.id}`
-      }
-    
-      style={{ backgroundColor: colour }}
-    >
-      <p>{unit.unitNumber}</p>
-      {unit.report && (
-        <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
-      )}
-    </Link>
+    unit.report || isResponder ? (
+      <Link
+        key={unit.id}
+        href={isResponder 
+          ? `/building/${building.id}/unit/${unit.id}?responder=true`
+          : `/building/${building.id}/unit/${unit.id}`
+        }
+        style={{ backgroundColor: colour }}
+      >
+        <p>{unit.unitNumber}</p>
+        {unit.report && (
+          <p>{unit.report.occupantsEvacuated}/{unit.report.totalOccupants}</p>
+        )}
+      </Link>
+    ) : (
+      <div key={unit.id} style={{ backgroundColor: colour }}>
+        <p>{unit.unitNumber}</p>
+        {!unit.report && <p>{label}</p>}
+      </div>
+    )
   )
 })}
-</div>
 </div>  
-)
+</div>  
+  )
 }

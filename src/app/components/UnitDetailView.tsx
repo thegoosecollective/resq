@@ -31,32 +31,54 @@ type Report = {
 
 export default function UnitDetailView({
     report, 
-    isResponder
+    isResponder,
+    unitId
   }: {
-    report: Report
+    report: Report | null
     isResponder: boolean
+    unitId: number  
   }) {
     const router = useRouter()
 
     const [responderStatus, setResponderStatus] = useState<ResponderStatus | null>(
-        report.responderStatus as ResponderStatus | null
-      )
+      report?.responderStatus as ResponderStatus | null ?? null
+    )
 
-      async function handleResponderStatusChange(status: ResponderStatus) {
-        setResponderStatus(status)
-        
-        const result = await updateResponderStatus({
-          unitId: report.unitId,
-          responderStatus: status,
-        })
+    async function handleResponderStatusChange(status: ResponderStatus) {
+      setResponderStatus(status)
+      
+      const result = await updateResponderStatus({
+        unitId: report?.unitId ?? unitId,  
+        responderStatus: status,
+      })
       
         if (result.success) {
           router.refresh() 
         } else {
-          setResponderStatus(report.responderStatus as ResponderStatus | null)
+          setResponderStatus(report?.responderStatus as ResponderStatus | null ?? null)
           alert('Failed to update status. Please try again.')
         }
       }
+
+      if (!report && isResponder) {
+        return (
+          <div>
+            <p>No report submitted for this unit.</p>
+            <p>Update responder status:</p>
+            {statusOptions.map(option => (
+              <button
+                key={option.value}
+                onClick={() => handleResponderStatusChange(option.value as ResponderStatus)}
+                className={responderStatus === option.value ? 'ring-2 ring-offset-1 ring-current' : 'opacity-70'}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )
+      }
+
+      if (!report) return null 
 
       return(
         <div>
@@ -70,15 +92,19 @@ export default function UnitDetailView({
     {!isResponder && report.responderStatus && (
   <p>Responder update: {getResponderStatusDisplay(report.responderStatus, false)}</p>
 )}
-<p>Evacuated: {report.occupantsEvacuated}/{report.totalOccupants} occupants</p>
-
-   <p>Resource requests:</p>
-   <ul>
-   {report.resourceRequests.map(r => (
-  <li key={r}>{getResourceLabel(r)}</li>
-))}
-
-   </ul>
+{report.totalOccupants > 0 && (
+  <p>Evacuated: {report.occupantsEvacuated}/{report.totalOccupants} occupants</p>
+)}
+  {report.resourceRequests.length > 0 && (
+  <>
+    <p>Resource requests:</p>
+    <ul>
+      {report.resourceRequests.map(r => (
+        <li key={r}>{getResourceLabel(r)}</li>
+      ))}
+    </ul>
+  </>
+)}
 
 {/* for first responders only */}
 {report.notes && isResponder && (
@@ -108,4 +134,5 @@ export default function UnitDetailView({
   </div>
 )}
   </div> 
-      )}
+      )
+    }

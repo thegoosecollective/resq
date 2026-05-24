@@ -16,14 +16,16 @@ export default async function UnitReportPage({
   const { responder } = await searchParams
   const isResponder = responder === 'true'
   const report = await getReportByUnitID(Number(unitId))
-  if (!report) notFound()
+
+  if (!report && !isResponder) notFound()  
 
   return (
     <div>
-      <UnitDetailView
-      report={report}
-      isResponder={isResponder}
-    />
+<UnitDetailView
+  report={report}
+  isResponder={isResponder}
+  unitId={Number(unitId)}
+/>
     </div>
   )
 }

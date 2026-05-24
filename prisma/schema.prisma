@@ -47,7 +47,7 @@ model Report {
   unit             Unit             @relation(fields: [unitId], references: [id])
   totalOccupants Int          
   occupantsEvacuated Int            @default(0) 
-  residentStatus   ResidentStatus
+  residentStatus   ResidentStatus?
   resourceRequests String[]
   notes            String?
   submittedAt      DateTime         @default(now())
