@@ -52,4 +52,5 @@ model Report {
   notes            String?
   submittedAt      DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
+  responderStatus  ResponderStatus? 
 }

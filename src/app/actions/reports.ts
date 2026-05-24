@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { ResidentStatus } from '@prisma/client'
+import { ResidentStatus, ResponderStatus } from '@prisma/client'
 
 export async function submitReport({
   unitId,
@@ -47,4 +47,26 @@ export async function getReportByUnitID(id: number) {
     where: { unitId: id },
     include: { unit: true }  
   })
+}
+
+
+export async function updateResponderStatus({
+  unitId,
+  responderStatus,
+}: {
+  unitId: number
+  responderStatus: ResponderStatus
+})
+ {
+  try {
+    const report = await prisma.report.update({
+      where: { unitId },
+      data: { responderStatus},
+    })
+    return { success: true, report }
+  }  catch (error) {
+    console.error('FULL ERROR:', JSON.stringify(error, null, 2))
+
+    return { success: false, error: 'Failed to submit report. Please try again' }
+  }
 }
