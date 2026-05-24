@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getReportByUnitID } from '@/app/actions/reports'
-import { getStatusDisplay } from '@/lib/reportUtils'
-import { getResourceLabel } from '@/lib/reportUtils'
+import { getStatusDisplay, getResponderStatusDisplay, getResourceLabel } from '@/lib/reportUtils'
 import Link from 'next/link'
 
 
@@ -31,9 +30,15 @@ export default async function ConfirmationPage({
     <p>Your report has been updated</p>
     <h2>Unit {report.unit.unitNumber}</h2>   
     <button style={{ backgroundColor: colour, color: 'white' }} disabled>{label}</button>
-    <p>Submitted at : {new Date(report.submittedAt).toLocaleString()}</p>
-    <p>Last updated: {new Date(report.updatedAt).toLocaleString()}</p>
-
+    <p>Submitted at : {new Date(report.submittedAt).toISOString().replace('T', ' ').slice(0, 16)}</p>
+    <p>Last updated: {new Date(report.updatedAt).toISOString().replace('T', ' ').slice(0, 16)}</p>
+{/* responder status — only show if exists */}
+{report.responderStatus && (
+  <div>
+    <p>Responder update:</p>
+    <p>{getResponderStatusDisplay(report.responderStatus, false)}</p>
+  </div>
+)}
    <p>Resource requests:</p>
    <ul>
    {report.resourceRequests.map(r => (
@@ -42,11 +47,12 @@ export default async function ConfirmationPage({
 
    </ul>
 
-   <p>Notes:</p>
-
-   <div>
-    {report.notes}
-   </div>
+   {report.notes && (
+  <>
+    <p>Notes:</p>
+    <div>{report.notes}</div>
+  </>
+)}
    <Link href={`/building/${id}/report?unitId=${report.unitId}`}>
   Edit report
 </Link>
