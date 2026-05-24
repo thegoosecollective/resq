@@ -3,40 +3,28 @@ export function getStatusDisplay(
   resourceRequests: string[],
   responderStatus?: string | null,
   isResponder?: boolean
-): { colour: string; label: string } {
+): { colour: string; label: string; textColour: string } {
 
-  // responder overrides first
-  if (isResponder && responderStatus) {
-    if (responderStatus === 'in_progress') return { colour: '#F97316', label: '🚒 In progress' }
-    if (responderStatus === 'evacuated') return { colour: '#008000', label: '✅ Resolved' }
-    if (responderStatus === 'deceased') return { colour: '#374151', label: 'Deceased' }
+   // no report yet — check before anything else
+   if (!residentStatus) {
+    return { colour: '#CBD5E1', label: 'No report yet', textColour: '#1E293B' }
   }
 
-  // no report yet — check before anything else
-  if (!residentStatus) {
-    return { colour: '#D1D5DB', label: 'No report yet' }
+   // responder overrides
+   if (isResponder && responderStatus) {
+    if (responderStatus === 'in_progress') return { colour: '#F97316', label: '🚒 In progress', textColour: '#ffffff' }
+    if (responderStatus === 'evacuated') return { colour: '#16A34A', label: '✅ Resolved', textColour: '#ffffff' }
+    if (responderStatus === 'deceased') return { colour: '#374151', label: 'Deceased', textColour: '#ffffff' }
   }
-
-  // resident status colours
-  let colour = ''
-  let label = ''
 
   if (residentStatus === 'evacuated' && resourceRequests.includes('pet')) {
-    colour = '#0000FF'
-    label = 'Evacuated — Pet rescue required'
-  } else if (residentStatus === 'evacuated') {
-    colour = '#008000'
-    label = 'Evacuated'
-  } else if (residentStatus === 'assistance') {
-    colour = '#FFCE18'
-    label = 'Needs assistance'
-  } else {
-    colour = '#780606'
-    label = 'Critical'
+    return { colour: '#2563EB', label: 'Evacuated — Pet rescue required', textColour: '#ffffff' }
   }
-
-  return { colour, label }
+  if (residentStatus === 'evacuated') return { colour: '#16A34A', label: 'Evacuated', textColour: '#ffffff' }
+  if (residentStatus === 'assistance') return { colour: '#F59E0B', label: 'Needs assistance', textColour: '#1C1917' }  // amber stays, dark text
+  return { colour: '#DC2626', label: 'Critical', textColour: '#ffffff' }
 }
+
   const resourceLabels: Record<string, string> = {
     mobility: 'Mobility assistance',
     pet: 'Pet evacuation',

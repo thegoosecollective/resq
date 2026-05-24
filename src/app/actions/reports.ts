@@ -45,8 +45,13 @@ export async function submitReport({
 export async function getReportByUnitID(id: number) {
   return await prisma.report.findUnique({
     where: { unitId: id },
-    include: { unit: true }  
-  })
+    include: {
+      unit: {
+        include: {
+          building: true
+        }
+      }
+    }})
 }
 
 

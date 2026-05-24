@@ -264,6 +264,7 @@ export default function BuildingReportForm({
             <button
               key={option.value}
               type="button"
+              aria-pressed={residentStatus === option.value}
               disabled={!selectedUnitId}
               onClick={() => handleStatusChange(option.value as ResidentStatus)}
               className={`w-full text-left px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all
@@ -291,6 +292,7 @@ export default function BuildingReportForm({
           {availableResources.map(option => (
             <label
               key={option.value}
+              htmlFor={`resource-${option.value}`}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 cursor-pointer transition-all
                 ${resourceRequests.includes(option.value)
                   ? 'border-blue-400 bg-blue-50 text-blue-800'
@@ -302,6 +304,7 @@ export default function BuildingReportForm({
             >
               <input
                 type="checkbox"
+                id={`resource-${option.value}`}
                 value={option.value}
                 checked={resourceRequests.includes(option.value)}
                 onChange={() => toggleResource(option.value)}

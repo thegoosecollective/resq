@@ -3,7 +3,6 @@ import { getReportByUnitID } from '@/app/actions/reports'
 import { getStatusDisplay, getResponderStatusDisplay, getResourceLabel } from '@/lib/reportUtils'
 import Link from 'next/link'
 
-
 export default async function ConfirmationPage({
   params,
   searchParams,
@@ -17,49 +16,124 @@ export default async function ConfirmationPage({
   if (!unitId) notFound()
 
   const report = await getReportByUnitID(Number(unitId))
-
   if (!report) notFound()
 
-  const { colour, label } = getStatusDisplay(
+  const { colour, label, textColour } = getStatusDisplay(
     report.residentStatus,
     report.resourceRequests
   )
 
   return (
-    <div>
-    <p>Your report has been updated</p>
-    <h2>Unit {report.unit.unitNumber}</h2>   
-    <button style={{ backgroundColor: colour, color: 'white' }} disabled>{label}</button>
-    <p>Submitted at : {new Date(report.submittedAt).toISOString().replace('T', ' ').slice(0, 16)}</p>
-    <p>Last updated: {new Date(report.updatedAt).toISOString().replace('T', ' ').slice(0, 16)}</p>
-{/* responder status — only show if exists */}
-{report.responderStatus && (
-  <div>
-    <p>Responder update:</p>
-    <p>{getResponderStatusDisplay(report.responderStatus, false)}</p>
-  </div>
-)}
-   <p>Resource requests:</p>
-   <ul>
-   {report.resourceRequests.map(r => (
-  <li key={r}>{getResourceLabel(r)}</li>
-))}
+    <main className="min-h-screen bg-slate-50 px-4 py-10">
+      <div className="w-full max-w-lg mx-auto space-y-6">
 
-   </ul>
+        {/* Header */}
+        <div className="text-center space-y-1">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Report submitted</p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Unit {report.unit.unitNumber} · Floor {report.unit.floor}
+          </h1>
+          <p className="text-sm font-medium text-slate-500">
+  {report.unit.building.name} · {report.unit.building.address}
+</p>
+        </div>
 
-   {report.notes && (
-  <>
-    <p>Notes:</p>
-    <div>{report.notes}</div>
-  </>
-)}
-   <Link href={`/building/${id}/report?unitId=${report.unitId}`}>
-  Edit report
-</Link>
-<Link href={`/building/${id}/report`}>
-  Wrong unit? Click here
-</Link>
+        {/* Status badge */}
+        <div
+          className="w-full py-4 px-6 rounded-xl text-center font-bold text-lg"
+          style={{ backgroundColor: colour, color: textColour }}
+          role="status"
+          aria-label={`Current status: ${label}`}
+        >
+          {label}
+        </div>
+
+        {/* Responder update */}
+        {report.responderStatus && (
+          <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Responder update</p>
+            <p className="font-bold text-blue-900">
+              {getResponderStatusDisplay(report.responderStatus, false)}
+            </p>
+          </div>
+        )}
+
+      
+{/* Report details card */}
+<div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+  <dl>
+
+    {/* Submitted */}
+    <div className="px-5 py-4 flex justify-between">
+    <dt className="text-base font-bold text-slate-500">Submitted</dt>
+    <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
+        {new Date(report.submittedAt).toLocaleString()}
+      </dd>
     </div>
 
+    {/* Last updated */}
+    <div className="px-5 py-4 flex justify-between">
+    <dt className="text-base font-bold text-slate-500">Last updated</dt>
+    <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
+        {new Date(report.updatedAt).toLocaleString()}
+      </dd>
+    </div>
+
+    {/* Occupants */}
+    {report.totalOccupants > 0 && (
+      <div className="px-5 py-4 flex justify-between">
+        <dt className="text-base font-bold text-slate-500">Evacuated</dt>
+        <dd className="text-base font-medium text-slate-900">
+          {report.occupantsEvacuated}/{report.totalOccupants}
+        </dd>
+      </div>
+    )}
+
+  </dl>
+
+  {/* Resource requests */}
+  {report.resourceRequests.length > 0 && (
+    <div className="px-5 py-4">
+      <p className="text-sm font-bold text-slate-500 mb-2">Resource requests</p>
+      <ul aria-label="Resource requests" className="space-y-1">
+        {report.resourceRequests.map(r => (
+          <li key={r} className="text-base font-medium text-slate-900">
+            {getResourceLabel(r)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* Notes */}
+  {report.notes && (
+    <div className="px-5 py-4">
+      <p className="text-sm font-bold text-slate-500 mb-1">Notes</p>
+      <p className="text-sm font-medium text-slate-900">{report.notes}</p>
+    </div>
+  )}
+
+</div>
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+          aria-label="Edit your safety report"
+            href={`/building/${id}/report?unitId=${report.unitId}`}
+            className="flex-1 block text-center px-6 py-3 bg-blue-600 text-white font-bold rounded-lg border-2 border-blue-600 hover:bg-transparent hover:text-blue-600 transition-colors"
+          >
+            Edit report
+          </Link>
+          <Link
+          aria-label="Report was submitted for wrong unit"
+            href={`/building/${id}/report`}
+            className="flex-1 block text-center px-6 py-3 bg-transparent text-slate-700 font-bold rounded-lg border-2 border-slate-300 hover:border-slate-500 transition-colors"
+          >
+            Wrong unit?
+          </Link>
+        </div>
+
+      </div>
+    </main>
   )
 }
