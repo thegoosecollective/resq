@@ -1,7 +1,7 @@
-'use server'
+"use server";
 
-import { prisma } from '@/lib/prisma'
-import { ResidentStatus, ResponderStatus } from '@prisma/client'
+import { prisma } from "@/lib/prisma";
+import { ResidentStatus, ResponderStatus } from "@prisma/client";
 
 export async function submitReport({
   unitId,
@@ -11,34 +11,45 @@ export async function submitReport({
   resourceRequests,
   notes,
 }: {
-  unitId: number
-  residentStatus: ResidentStatus
-  resourceRequests: string[]
-  totalOccupants: number
-  occupantsEvacuated: number
-  notes?: string
-})
- {
+  unitId: number;
+  residentStatus: ResidentStatus;
+  resourceRequests: string[];
+  totalOccupants: number;
+  occupantsEvacuated: number;
+  notes?: string;
+}) {
   try {
+    // Upsert on unitId to ensure one report per unit
+    // Resident can resubmit without duplicate records
     const report = await prisma.report.upsert({
       where: { unitId },
-      update: { residentStatus, 
-                resourceRequests, 
-                totalOccupants,
-                occupantsEvacuated,
-                notes, 
-                updatedAt: new Date() 
-            },
-      create: { unitId, 
-                residentStatus, totalOccupants,
-                occupantsEvacuated,
-                resourceRequests, notes },
-    })
-    return { success: true, report }
-  }  catch (error) {
-    console.error('FULL ERROR:', JSON.stringify(error, null, 2))
+      update: {
+        residentStatus,
+        resourceRequests,
+        totalOccupants,
+        occupantsEvacuated,
+        notes,
+      // updatedAt handled automatically by Prisma @updatedAt
+      },
+    // Responder-created records may have null residentStatus
+    // Distinguishes responder attendance from resident self-reporting
+      create: {
+        unitId,
+        residentStatus,
+        totalOccupants,
+        occupantsEvacuated,
+        resourceRequests,
+        notes,
+      },
+    });
+    return { success: true, report };
+  } catch (error) {
+    console.error("FULL ERROR:", JSON.stringify(error, null, 2));
 
-    return { success: false, error: 'Failed to submit report. Please try again' }
+    return {
+      success: false,
+      error: "Failed to submit report. Please try again",
+    };
   }
 }
 
@@ -48,36 +59,36 @@ export async function getReportByUnitID(id: number) {
     include: {
       unit: {
         include: {
-          building: true
-        }
-      }
-    }})
+          building: true,
+        },
+      },
+    },
+  });
 }
-
 
 export async function updateResponderStatus({
   unitId,
   responderStatus,
 }: {
-  unitId: number
-  responderStatus: ResponderStatus
+  unitId: number;
+  responderStatus: ResponderStatus;
 }) {
   try {
-    const data: any = { responderStatus }
-    if (responderStatus === 'evacuated') {
-      const existing = await prisma.report.findUnique({ where: { unitId } })
+    const data: any = { responderStatus };
+    if (responderStatus === "evacuated") {
+      const existing = await prisma.report.findUnique({ where: { unitId } });
       if (existing) {
-        data.occupantsEvacuated = existing.totalOccupants
+        data.occupantsEvacuated = existing.totalOccupants;
       }
     }
 
     const updated = await prisma.report.update({
       where: { unitId },
       data,
-    })
-    return { success: true, report: updated }
+    });
+    return { success: true, report: updated };
   } catch (error) {
-    console.error('FULL ERROR:', JSON.stringify(error, null, 2))
-    return { success: false, error: 'Failed to update status.' }
+    console.error("FULL ERROR:", JSON.stringify(error, null, 2));
+    return { success: false, error: "Failed to update status." };
   }
 }
