@@ -1,12 +1,29 @@
 import BuildingCodeForm from '@/app/components/BuildingCodeForm'
 
-export default function Home() {
+export default function Responder() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center">
-      <h1 className="mb-5">Res-Q</h1>
-      <h3 className="mb-[30px] text-center">Emergency portal for first responders</h3>
-      <p className="font-bold mb-2">Enter access code:</p>
-    <BuildingCodeForm redirectTo="responder" />
-    </div>
-  );
+    <main
+      className="min-h-screen flex flex-col items-center justify-center px-4 gap-8"
+      aria-label="Res-Q homepage"
+    >
+      {/* Logo + tagline */}
+      <div className="text-center space-y-3">
+        <h1 aria-label="Res-Q emergency portal">Res-Q</h1>
+        <p className="text-base font-medium text-slate-600 max-w-[550px] mx-auto">
+          Emergency communication portal for residents and family members
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="w-full max-w-[550px] border-t border-slate-200" aria-hidden="true" />
+
+      {/* Form section */}
+      <div className="w-full max-w-[550px] space-y-3">
+        <label className="block text-sm font-bold text-slate-700 text-center">
+          Enter the building access code
+        </label>
+        <BuildingCodeForm />
+      </div>
+    </main>
+  )
 }

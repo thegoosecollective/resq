@@ -27,7 +27,7 @@ type ButtonProps = {
         type={type}
         onClick={onClick}
         disabled={disabled}
-        className={`cursor-pointer px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 ${variants[variant]} ${className ?? ''}`}
+        className={`cursor-pointer px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 ${variants[variant]} ${className ?? ''}`}
         >
         {children}
       </button>
