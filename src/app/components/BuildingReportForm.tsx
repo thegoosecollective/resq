@@ -44,7 +44,7 @@ const statusOptions = [
     building: Building
     units: Unit[]
     existingReport?: {
-      residentStatus: ResidentStatus
+      residentStatus: ResidentStatus | null  
       resourceRequests: string[]
       totalOccupants: number
       occupantsEvacuated: number
@@ -68,7 +68,7 @@ const statusOptions = [
       existingReport?.unitId ?? null
     )
     const [residentStatus, setResidentStatus] = useState<ResidentStatus | null>(
-      existingReport?.residentStatus ?? null
+      existingReport?.residentStatus ?? null  
     )
     
     
@@ -247,7 +247,7 @@ const statusOptions = [
   </div>
 
 {/*unit dropdown*/}
-<div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : 'border border-gray-300 rounded-lg p-2'}>
+<div className={fieldErrors.unit ? 'border-2 border-red-500 rounded-lg p-2' : ''}>
 {fieldErrors.unit && (
  <ErrorMessage message={fieldErrors.unit} />)}
         <label className="block text-sm font-medium text-gray-700 mb-1">

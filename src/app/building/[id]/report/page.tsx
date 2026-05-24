@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getBuildingWithUnits } from '@/app/actions/buildings'
 import BuildingReportForm from '@/app/components/BuildingReportForm'
 import { getReportByUnitID } from '@/app/actions/reports'
+import Link from 'next/link'
 
 export default async function ReportPage({
   params,
@@ -22,7 +23,8 @@ export default async function ReportPage({
 
   return (
     <div>
-      <h1>{building.name}</h1>
+    <Link href={`/building/${building.id}`}>← Back</Link>
+      <h1>{building.name}: Reporting</h1>
       <BuildingReportForm
         building={building}
         units={building.units}
