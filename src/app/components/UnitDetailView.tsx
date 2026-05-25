@@ -143,9 +143,9 @@ export default function UnitDetailView({
   const { colour, label, textColour } = getStatusDisplay(
     report.residentStatus,
     report.resourceRequests,
-    report.responderStatus,
-    isResponder
-  );
+    report.responderStatus,  
+    isResponder              
+  )
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10">
