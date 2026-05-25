@@ -188,6 +188,7 @@ export default function DashboardView({
                 textColour: "#1C1917",
               },
               { colour: "#DC2626", label: "Critical", textColour: "#fff" },
+              { colour: '#EA580C', label: isResponder ? 'In progress' : 'Help is on the way', textColour: '#fff' },
               { colour: "#2563EB", label: "Pet rescue", textColour: "#fff" },
               ...(isResponder
                 ? [
