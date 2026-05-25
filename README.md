@@ -1,5 +1,17 @@
 # Res-Q — Real-Time Emergency Communication for Residential Buildings
 
+## 🚀 Live Prototype
+
+| | |
+|---|---|
+| **Resident & Family portal** | https://resq.thegoosecollective.com |
+| **First Responder portal** | https://resq.thegoosecollective.com/responder |
+| **Building access code** | `213b4211` |
+
+The prototype is pre-seeded with realistic emergency scenario data — ~65% of units have reports across a mix of evacuated, needs assistance, emergency, pet rescue, and responder-attended statuses.
+
+---
+
 ## User Journeys
 
 ### 🏠 Resident — Reporting Your Status
