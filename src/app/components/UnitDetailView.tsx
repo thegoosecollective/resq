@@ -187,7 +187,7 @@ export default function UnitDetailView({
           <dl>
             {/* Timestamps */}
             <div className="px-5 py-4 flex justify-between">
-              <dt className="text-base font-bold text-slate-500">Submitted</dt>
+              <dt className="text-base font-bold text-slate-600">Submitted</dt>
               <dd
                 className="text-base font-medium text-slate-900"
                 suppressHydrationWarning
@@ -197,7 +197,7 @@ export default function UnitDetailView({
             </div>
 
             <div className="px-5 py-4 flex justify-between">
-              <dt className="text-base font-bold text-slate-500">
+              <dt className="text-base font-bold text-slate-600">
                 Last updated
               </dt>
               <dd
@@ -211,7 +211,7 @@ export default function UnitDetailView({
             {/* Occupants */}
             {report.totalOccupants > 0 && (
               <div className="px-5 py-4 flex justify-between">
-                <dt className="text-base font-bold text-slate-500">
+                <dt className="text-base font-bold text-slate-600">
                   Evacuated
                 </dt>
                 <dd className="text-base font-medium text-slate-900">
@@ -223,7 +223,7 @@ export default function UnitDetailView({
 
           {/* Resource requests */}
           <div className="px-5 py-4">
-            <p className="text-base font-bold text-slate-500 mb-2">
+            <p className="text-base font-bold text-slate-600 mb-2">
               Resource requests
             </p>
             {report.resourceRequests.length > 0 ? (
@@ -242,7 +242,7 @@ export default function UnitDetailView({
           {/* Notes — responders only */}
           {report.notes && isResponder && (
             <div className="px-5 py-4">
-              <p className="text-base font-bold text-slate-500 mb-1">Notes</p>
+              <p className="text-base font-bold text-slate-600 mb-1">Notes</p>
               <p className="text-base font-medium text-slate-900">
                 {report.notes}
               </p>

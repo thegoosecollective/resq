@@ -76,7 +76,7 @@ export default async function ConfirmationPage({
 
             {/* Submitted */}
             <div className="px-5 py-4 flex justify-between">
-              <dt className="text-base font-bold text-slate-500">Submitted</dt>
+              <dt className="text-base font-bold text-slate-600">Submitted</dt>
               <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
                 {new Date(report.submittedAt).toLocaleString()}
               </dd>
@@ -84,7 +84,7 @@ export default async function ConfirmationPage({
 
             {/* Last updated */}
             <div className="px-5 py-4 flex justify-between">
-              <dt className="text-base font-bold text-slate-500">Last updated</dt>
+              <dt className="text-base font-bold text-slate-600">Last updated</dt>
               <dd className="text-base font-medium text-slate-900" suppressHydrationWarning>
                 {new Date(report.updatedAt).toLocaleString()}
               </dd>
@@ -93,7 +93,7 @@ export default async function ConfirmationPage({
             {/* Occupants */}
             {report.totalOccupants > 0 && (
               <div className="px-5 py-4 flex justify-between">
-                <dt className="text-base font-bold text-slate-500">Evacuated</dt>
+                <dt className="text-base font-bold text-slate-600">Evacuated</dt>
                 <dd className="text-base font-medium text-slate-900">
                   {report.occupantsEvacuated}/{report.totalOccupants}
                 </dd>
@@ -102,7 +102,7 @@ export default async function ConfirmationPage({
 
             {/* Resource requests */}
             <div className="px-5 py-4">
-              <dt className="text-base font-bold text-slate-500 mb-2">Resource requests</dt>
+              <dt className="text-base font-bold text-slate-600 mb-2">Resource requests</dt>
               <dd>
                 {report.resourceRequests.length > 0 ? (
                   <ul aria-label="Resource requests" className="space-y-1">
@@ -121,7 +121,7 @@ export default async function ConfirmationPage({
             {/* Notes */}
             {report.notes && (
               <div className="px-5 py-4">
-                <dt className="text-base font-bold text-slate-500 mb-1">Notes</dt>
+                <dt className="text-base font-bold text-slate-600 mb-1">Notes</dt>
                 <dd className="text-base font-medium text-slate-900">{report.notes}</dd>
               </div>
             )}
