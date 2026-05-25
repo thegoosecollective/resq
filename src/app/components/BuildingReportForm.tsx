@@ -481,6 +481,7 @@ export default function BuildingReportForm({
           placeholder="e.g. Non-ambulatory, oxygen tank present, located in back bedroom..."
           className="w-full border-2 border-slate-200 rounded-lg p-3 h-28 resize-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         />
+        <p>Notes are only visible to first responders and will not be made public.</p>
       </div>
 
       {/* Submit */}
