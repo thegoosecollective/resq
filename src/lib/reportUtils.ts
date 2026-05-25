@@ -45,13 +45,6 @@ export function getStatusDisplay(
           : "In progress";
       return { colour: "#EA580C", label, textColour: "#ffffff" };
     }
-    if (responderStatus === "in_progress" && !isResponder) {
-      const label =
-        residentStatus === "emergency"
-          ? "Critical — Help is on the way"
-          : "Help is on the way";
-      return { colour: "#EA580C", label, textColour: "#ffffff" };
-    }
     if (responderStatus === "deceased" && isResponder) {
       return { colour: "#374151", label: "Deceased", textColour: "#ffffff" };
     }
