@@ -62,7 +62,8 @@ export default function DashboardView({
   const reportedCount = units.filter((u) => u.report !== null).length;
   const totalCount = units.length;
   const emergencyCount = units.filter(
-    (u) => u.report?.residentStatus === "emergency"
+    (u) => u.report?.residentStatus === "emergency" &&
+    u.report?.responderStatus !== "evacuated"
   ).length;
   const assistanceCount = units.filter(
     (u) => u.report?.residentStatus === "assistance"
@@ -192,11 +193,6 @@ export default function DashboardView({
               { colour: "#2563EB", label: "Pet rescue", textColour: "#fff" },
               ...(isResponder
                 ? [
-                    {
-                      colour: "#EA580C",
-                      label: "In progress",
-                      textColour: "#fff",
-                    },
                     {
                       colour: "#374151",
                       label: "Deceased",
