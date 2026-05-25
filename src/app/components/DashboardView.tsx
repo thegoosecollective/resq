@@ -62,13 +62,18 @@ export default function DashboardView({
   const reportedCount = units.filter((u) => u.report !== null).length;
   const totalCount = units.length;
   const emergencyCount = units.filter(
-    (u) => u.report?.residentStatus === "emergency" &&
-    u.report?.responderStatus !== "evacuated"
+    (u) =>
+      u.report?.residentStatus === "emergency" &&
+      u.report?.responderStatus !== "evacuated" &&
+      u.report?.responderStatus !== "deceased"
   ).length;
+  
   const assistanceCount = units.filter(
-    (u) => u.report?.residentStatus === "assistance"
+    (u) =>
+      u.report?.residentStatus === "assistance" &&
+      u.report?.responderStatus !== "evacuated" &&
+      u.report?.responderStatus !== "deceased"
   ).length;
-
   const floors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
   const visibleUnits = units
     .filter((u) => (selectedFloor ? u.floor === selectedFloor : true))
